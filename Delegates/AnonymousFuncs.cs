@@ -27,11 +27,8 @@ namespace Delegates
 
         public static void TimeStampInvoke(Action printer)
         {
-            System.Delegate.Remove(printer, printer);
             Console.WriteLine(DateTime.Now);
             printer.Invoke();
         }
-
-
     }
 }
