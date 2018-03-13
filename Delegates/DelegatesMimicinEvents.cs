@@ -17,11 +17,11 @@ namespace Delegates
             var emailSender = new EmailSender();
             JokeGenerator jokeGenerator = new JokeGenerator();
             jokeGenerator.Subscribe(emailSender.MailJoke);
-       
+
             jokeGenerator.Subscribe(smsSender.SmsJoke);
 
             Console.WriteLine("Hit enter to remove SMS sender");
-           // Console.ReadLine( );
+            // Console.ReadLine( );
             jokeGenerator.UnSubscribe(smsSender.SmsJoke);
 
             Console.ReadLine();
@@ -38,6 +38,7 @@ namespace Delegates
     {
         public void SmsJoke(string joke) { }
     }
+
     public class JokeGenerator
     {
         private DelegatesMimicinEvents.Joke jokeDelegate;
@@ -71,6 +72,11 @@ namespace Delegates
         }
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            this.GenerateJoke();
+        }
+
+        private void GenerateJoke()
         {
             if (this.jokeDelegate != null)
             {
