@@ -42,8 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FuncPredicateAction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Variance.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

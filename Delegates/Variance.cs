@@ -16,30 +16,23 @@ namespace Delegates
 
     }
     class Variance
-
     {
         static void Main(string[] args)
         {
-            var comparer = new AnimalComparer();
-            CompareBirds(comparer);
+            BirdCreator birdCreator=new BirdCreator(  );
 
-            Animal animal = Create(new BirdCreator());
+            ContraVariance( birdCreator );
+
+
             Console.ReadLine();
         }
-
-        static void CompareBirds(ICustomComparer<Bird> comparer)
+        public static void ContraVariance( ICreator<Animal> creator )
         {
-            var bird1 = new Bird();
-            var bird2 = new Bird();
-            if (comparer.Compare(bird1, bird2) > 0)
-                Console.WriteLine("first bird wins!");
+            creator.Create( );
         }
-
-        static Animal Create(ICreator<Bird> creator)
-        {
-            return creator.Create();
-        }
+      
     }
+    
     public interface ICreator<out T>
     {
         T Create();
@@ -56,20 +49,5 @@ namespace Delegates
     public interface IIllegal<in T>
     {
         T SomeMethod(T param);
-    }
-
-    public interface ICustomComparer<in T>
-    {
-        int Compare(T x, T y);
-    }
-
-    public class AnimalComparer : ICustomComparer<Animal>
-    {
-
-        public int Compare(Animal x, Animal y)
-        {
-            return 1;
-        }
-
     }
 }
