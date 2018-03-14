@@ -35,7 +35,7 @@ namespace UnderstandingLINQ
             //                  orderby car.Year descending
             //                  select car;
             //var orderedCars = myCars.OrderByDescending(p => p.Year);
-            
+
             //foreach (var car in orderedCars)
             //{
             //    Console.WriteLine("{0} {1}", car.Year, car.Model, car.VIN);
@@ -75,9 +75,32 @@ namespace UnderstandingLINQ
                           select new { car.Make, car.Model };
 
             Console.WriteLine(newCars.GetType());
+            //Group By
 
+            var queryByMake =
+                from car in myCars
+                group car by car.Make into newGroup
+                select newGroup;
+
+            foreach (var nameGroup in queryByMake)
+            {
+                Console.WriteLine("Key: {0}", nameGroup.Key);
+                foreach (var car in nameGroup)
+                {
+                    Console.WriteLine($"\t{car.Make}, {car.Model}");
+                }
+            }
+            //Lazy evaluation
+            var bmwCars = myCars.Where(c => c.Make == "BMW");
+            removeBrands(myCars);
+            var anyBmw = bmwCars.Any(car => car.Make == "BMW");
+            Console.WriteLine($"there are BMW: {anyBmw}");
             Console.ReadLine();
 
+        }
+        private static void removeBrands(List<Car> cars)
+        {
+            cars.ForEach(car => car.Make = "Anonymous");
         }
     }
 
