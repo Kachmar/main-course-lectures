@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Students>
+  <Student firstName="Oleksii" lastName="Kachmar">
+    <BirthDate>31.07.1983</BirthDate>
+    <Email>oles_kash@hotmail.com</Email>
+    <PhoneNumber>380672528114</PhoneNumber>
+    <ExtraData>
+      <ExtraDataElement name="SkypeId">oles_kash</ExtraDataElement>
+      <ExtraDataElement name="Marriage">yes</ExtraDataElement>
+    </ExtraData>
+    <Courses>
+      <Course>"c# main course"#1</Course>
+      <Course>"c# base course"#1</Course>
+    </Courses>
+  </Student>
+</Students>
