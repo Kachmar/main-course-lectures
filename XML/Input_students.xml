@@ -13,4 +13,17 @@
       <Course>"c# base course"#1</Course>
     </Courses>
   </Student>
+  <Student firstName="Maria" lastName="Pukha">
+    <BirthDate>31.07.1985</BirthDate>
+    <Email>maria@hotmail.com</Email>
+    <PhoneNumber>380672528118</PhoneNumber>
+    <ExtraData>
+      <ExtraDataElement name="SkypeId">prosto_maria</ExtraDataElement>
+      <ExtraDataElement name="Marriage">yes</ExtraDataElement>
+    </ExtraData>
+    <Courses>
+      <Course>"c# main course"#1</Course>
+      <Course>"c# base course"#1</Course>
+    </Courses>
+  </Student>
 </Students>
