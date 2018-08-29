@@ -378,7 +378,5 @@ SELECT CAST(scope_identity() AS int)
             connection.Open();
             return connection;
         }
-
-        
     }
 }
