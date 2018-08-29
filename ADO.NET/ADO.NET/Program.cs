@@ -26,7 +26,7 @@ namespace ADO.NET
                 Name = "test",
                 PhoneNumber = "000"
             };
-            var insertedStudent = Repository.InsertStudent(newStudent);
+            var insertedStudent = Repository.CreateStudent(newStudent);
 
             //Update
             var students = Repository.GetAllStudents();
@@ -58,7 +58,7 @@ namespace ADO.NET
                 PhoneNumber = "000"
             };
             Repository.DeleteGroup(newGroup.Id);
-            var insertedStudent = Repository.InsertStudent(newStudent);
+            var insertedStudent = Repository.CreateStudent(newStudent);
         }
     }
 }

@@ -13,7 +13,6 @@ namespace ADO.NET
 
     public static class Repository
     {
-
         public static List<Student> GetAllStudents()
         {
             using (SqlConnection connection = GetConnection())
@@ -43,65 +42,6 @@ namespace ADO.NET
 
 
                 return students;
-            }
-        }
-
-        public static List<Course> GetStudentCourses(int studentId)
-        {
-            List<Course> result = new List<Course>();
-            using (SqlConnection connection = GetConnection())
-            {
-                SqlCommand sqlCommand = new SqlCommand(
-                    $@"
-                   SELECT [Id]
-                  ,[Name]
-                  ,[StartDate]
-                  ,[EndDate]
-                  ,[PassCredits]
-                  ,[HomeTasksCount]
-              FROM [dbo].[Course] as c
-              join StudentCourse as sc on sc.CourseId=c.Id
-              where sc.StudentId =  {studentId}", connection);
-
-                using (var reader = sqlCommand.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        Course course = new Course();
-                        course.Id = reader.GetInt32(0);
-                        course.Name = reader.GetString(1);
-                        course.StartDate = reader.GetDateTime(2);
-                        course.EndDate = reader.GetDateTime(3);
-                        course.PassCredits = reader.GetInt32(4);
-                        course.HomeTasksCount = reader.GetInt32(5);
-                        result.Add(course);
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        private static Group GetStudentGroup(int studentId)
-        {
-            using (SqlConnection connection = GetConnection())
-            {
-                SqlCommand sqlCommand = new SqlCommand(
-                    $@"
-              SELECT g.Id
-              ,g.GroupName
-              FROM [dbo].[Group] as g
-              join StudentGroup as sg on sg.GroupId = g.Id
-              where sg.StudentId =  {studentId}",
-                    connection);
-                using (var reader = sqlCommand.ExecuteReader())
-                {
-                    reader.Read();
-                    Group group = new Group();
-                    group.Id = reader.GetInt32(0);
-                    group.Name = reader.GetString(1);
-                    return group;
-                }
             }
         }
 
@@ -165,7 +105,65 @@ namespace ADO.NET
             return result;
         }
 
+        public static List<Course> GetStudentCourses(int studentId)
+        {
+            List<Course> result = new List<Course>();
+            using (SqlConnection connection = GetConnection())
+            {
+                SqlCommand sqlCommand = new SqlCommand(
+                    $@"
+                   SELECT [Id]
+                  ,[Name]
+                  ,[StartDate]
+                  ,[EndDate]
+                  ,[PassCredits]
+                  ,[HomeTasksCount]
+              FROM [dbo].[Course] as c
+              join StudentCourse as sc on sc.CourseId=c.Id
+              where sc.StudentId =  {studentId}", connection);
 
+                using (var reader = sqlCommand.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Course course = new Course();
+                        course.Id = reader.GetInt32(0);
+                        course.Name = reader.GetString(1);
+                        course.StartDate = reader.GetDateTime(2);
+                        course.EndDate = reader.GetDateTime(3);
+                        course.PassCredits = reader.GetInt32(4);
+                        course.HomeTasksCount = reader.GetInt32(5);
+                        result.Add(course);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private static Group GetStudentGroup(int studentId)
+        {
+            using (SqlConnection connection = GetConnection())
+            {
+                SqlCommand sqlCommand = new SqlCommand(
+                    $@"
+              SELECT g.Id
+              ,g.GroupName
+              FROM [dbo].[Group] as g
+              join StudentGroup as sg on sg.GroupId = g.Id
+              where sg.StudentId =  {studentId}",
+                    connection);
+                using (var reader = sqlCommand.ExecuteReader())
+                {
+                    reader.Read();
+                    Group group = new Group();
+                    group.Id = reader.GetInt32(0);
+                    group.Name = reader.GetString(1);
+                    return group;
+                }
+            }
+        }
+        
         public static void DeleteStudent(int studentId)
         {
             using (SqlConnection connection = GetConnection())
@@ -173,6 +171,21 @@ namespace ADO.NET
                 SqlCommand sqlCommand = new SqlCommand(
                     $@"DELETE FROM [dbo].[Student]
                 WHERE Id={studentId}", connection);
+                sqlCommand.ExecuteNonQuery();
+            }
+        }
+
+        public static void DeleteCourse(int courseId)
+        {
+        }
+
+        public static void DeleteGroup(int groupId)
+        {
+            using (SqlConnection connection = GetConnection())
+            {
+                SqlCommand sqlCommand = new SqlCommand(
+                    $@"DELETE FROM [dbo].[Group]
+                WHERE Id={groupId}", connection);
                 sqlCommand.ExecuteNonQuery();
             }
         }
@@ -209,7 +222,13 @@ UPDATE [dbo].[Student]
             }
         }
 
-        public static Student InsertStudent(Student student)
+        public static void UpdateCourse(Course course)
+        {
+
+        }
+        public static void UpdateGroup(Group group) { }
+
+        public static Student CreateStudent(Student student)
         {
             using (SqlConnection connection = GetConnection())
             {
@@ -254,6 +273,7 @@ SELECT CAST(scope_identity() AS int)
 
             return student;
         }
+
         public static Group CreateGroup(string groupName)
         {
             using (SqlConnection connection = GetConnection())
@@ -278,19 +298,10 @@ SELECT CAST(scope_identity() AS int)
             }
         }
 
-        public static void DeleteGroup(int groupId)
-        {
-            using (SqlConnection connection = GetConnection())
-            {
-                SqlCommand sqlCommand = new SqlCommand(
-                    $@"DELETE FROM [dbo].[Group]
-                WHERE Id={groupId}", connection);
-                sqlCommand.ExecuteNonQuery();
-            }
-        }
+        public static Course CreateCourse(Course course) { }
 
         //This one has problems with datetime conversion
-        //        public void InsertStudent(Student student)
+        //        public void CreateStudent(Student student)
         //        {
         //            using (SqlConnection connection = GetConnection())
         //            {

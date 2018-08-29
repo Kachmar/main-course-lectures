@@ -19,17 +19,25 @@ namespace XML
             List<Student> ImportStudents = new List<Student>();
 
             Import(ImportStudents);
-            Serialize(ImportStudents);
+            XmlSerialize(ImportStudents);
             var result = Export(ImportStudents);
         }
 
-        private static void Serialize(List<Student> importStudents)
+        private static void XmlSerialize(List<Student> importStudents)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(List<Student>));
-            BinaryFormatter formatter = new BinaryFormatter();
             using (FileStream fs = new FileStream("people.xml", FileMode.OpenOrCreate))
             {
                 serializer.Serialize(fs, importStudents);
+            }
+        }
+
+        private static void BinarySerialize(List<Student> importStudents)
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            using (FileStream fs = new FileStream("people.data", FileMode.OpenOrCreate))
+            {
+                formatter.Serialize(fs, importStudents);
             }
         }
 
@@ -112,6 +120,9 @@ namespace XML
             }
         }
     }
+
+
+
     [Serializable]
     public class Student
     {
