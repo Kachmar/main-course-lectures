@@ -31,10 +31,10 @@ namespace UnderstandingLINQ
             //var bmws = myCars.Where(p => p.Make == "BMW" && p.Year == 2010);
 
             //Sorting example
-            //var orderedCars = from car in myCars
-            //                  orderby car.Year descending
-            //                  select car;
-            //var orderedCars = myCars.OrderByDescending(p => p.Year);
+            var orderedCars = from car in myCars
+                              orderby car.Year descending
+                              select car;
+            var orderedCars = myCars.OrderByDescending(p => p.Year);
 
             //foreach (var car in orderedCars)
             //{
@@ -44,6 +44,23 @@ namespace UnderstandingLINQ
             //complex queries
             var firstBMW = myCars.OrderByDescending(p => p.Year).First(p => p.Make == "BMW");
             Console.WriteLine(firstBMW.VIN);
+
+            //Aggregate  
+            string[] MySkills = {
+                                        "C#.net",
+                                        "Asp.net",
+                                        "MVC",
+                                        "Linq",
+                                        "EntityFramework",
+                                        "Swagger",
+                                        "Web-Api",
+                                        "OrcharCMS",
+                                        "Jquery",
+                                        "Sqlserver",
+                                        "Docusign"
+                                    };
+            var commaSeperatedString = MySkills.Aggregate((current, next) => current + ", " + next);
+
 
             //Commonly used 'Any';
             var anyCheapCars = myCars.Any(car => car.StickerPrice < 10000);
@@ -90,6 +107,7 @@ namespace UnderstandingLINQ
                     Console.WriteLine($"\t{car.Make}, {car.Model}");
                 }
             }
+
             //Lazy evaluation
             var bmwCars = myCars.Where(c => c.Make == "BMW");
             removeBrands(myCars);
