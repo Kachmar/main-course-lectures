@@ -169,6 +169,7 @@ namespace CollectionsAndGenerics
                 yield return "Sun";
             }
         }
+
         class MyFirstCourseCollection<T> : IEnumerator<T>, IEnumerable<T>
         {
             private T[] container;
@@ -232,7 +233,6 @@ namespace CollectionsAndGenerics
             {
                 return this;
             }
-
         }
 
         //class MyFirstCourseCollection : IEnumerator, IEnumerable

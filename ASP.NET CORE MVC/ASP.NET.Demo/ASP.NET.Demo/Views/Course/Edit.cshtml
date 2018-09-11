@@ -1,0 +1,84 @@
+﻿@model ASP.NET.Demo.Models.Course
+
+<form asp-action="@ViewData["action"]">
+    <div class="form-horizontal">
+        <h4>Course</h4>
+        <hr />
+        @*<div asp-validation-summary="ModelOnly" class="text-danger"></div>*@
+        <input type="hidden" asp-for="Id" />
+        <div class="form-group">
+            <label asp-for="Name" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Name" class="form-control" />
+                @*<span asp-validation-for="Title" class="text-danger"></span>*@
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="StartDate" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="StartDate" class="form-control" />
+                @*<span asp-validation-for="StartDate" class="text-danger"></span>*@
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="EndDate" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="EndDate" class="form-control" />
+                @*<span asp-validation-for="EndDate" class="text-danger"></span>*@
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="HomeTasksCount" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="HomeTasksCount" class="form-control" />
+                @*<span asp-validation-for="HomeTasksCount" class="text-danger"></span>*@
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="PassCredits" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PassCredits" class="form-control" />
+                @*<span asp-validation-for="PassCredits" class="text-danger"></span>*@
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<p>
+    <a asp-action="CreateNewHomeTask">Add New Home Task</a>
+</p>
+<table class="table">
+    <tbody>
+        @foreach (var homeTask in Model.HomeTasks)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => homeTask.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => homeTask.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => homeTask.Description)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", "HomeTask", new { id = homeTask.Id }) |
+                    @Html.ActionLink("Delete", "Delete", "HomeTask", new { homeTaskId = homeTask.Id, courseId = Model.Id })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@foreach (var homeTask in Model.HomeTasks)
+{
+    @Html.EditorFor(p => homeTask.Title);
+}
+<div>
+    <a asp-action="Courses">Back to List</a>
+</div>
