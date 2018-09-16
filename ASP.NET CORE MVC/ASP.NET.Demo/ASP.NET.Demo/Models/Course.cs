@@ -20,5 +20,7 @@
         public List<HomeTask> HomeTasks { get; set; }
 
         public List<Lecturer> Lecturers { get; set; }
+
+        public List<Student> Students { get; set; }
     }
 }

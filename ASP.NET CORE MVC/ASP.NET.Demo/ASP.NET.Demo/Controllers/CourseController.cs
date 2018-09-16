@@ -7,6 +7,7 @@ namespace ASP.NET.Demo.Controllers
     using System.Linq;
 
     using ASP.NET.Demo.Models;
+    using ASP.NET.Demo.ViewModels;
 
     public class CourseController : Controller
     {
@@ -31,7 +32,7 @@ namespace ASP.NET.Demo.Controllers
         public IActionResult Create()
         {
             ViewData["action"] = nameof(this.Create);
-            return this.View("Edit");
+            return this.View("Edit", new Course());
         }
 
         [HttpGet]
@@ -82,6 +83,54 @@ namespace ASP.NET.Demo.Controllers
             courseParameter.Id = ++maxCurrentId;
             CourseContainer.CourseCollection.Add(courseParameter);
             return this.RedirectToAction(nameof(Courses));
+        }
+
+        [HttpGet]
+        public IActionResult AssignStudents(int id)
+        {
+            var allStudents = GetAllStudents();
+            var course = CourseContainer.CourseCollection.Single(p => p.Id == id);
+            CourseStudentAssignmentViewModel model = new CourseStudentAssignmentViewModel();
+
+            model.Id = id;
+            model.EndDate = course.EndDate;
+            model.HomeTasksCount = course.HomeTasksCount;
+            model.Name = course.Name;
+            model.StartDate = course.StartDate;
+            model.PassCredits = course.PassCredits;
+            model.Students = new List<StudentViewModel>();
+
+            foreach (var student in allStudents)
+            {
+                bool isAssigned = course.Students.Any(p => p.Id == student.Id);
+                model.Students.Add(new StudentViewModel() { StudentId = student.Id, StudentFullName = student.Name, IsAssigned = isAssigned });
+            }
+
+            return this.View(model);
+        }
+
+        [HttpPost]
+        public IActionResult AssignStudents(CourseStudentAssignmentViewModel assignmentViewModel)
+        {
+            var allStudents = GetAllStudents();
+
+            var course = CourseContainer.CourseCollection.Single(p => p.Id == assignmentViewModel.Id);
+            course.Students.Clear();
+            foreach (var studentViewModel in assignmentViewModel.Students)
+            {
+                var student = allStudents.Single(p => p.Id == studentViewModel.StudentId);
+                if (studentViewModel.IsAssigned)
+                {
+                    course.Students.Add(student);
+                }
+            }
+
+            return RedirectToAction("Courses");
+        }
+
+        private static List<Student> GetAllStudents()
+        {
+            return CourseContainer.CourseCollection.SelectMany(p => p.Students).Distinct().ToList();
         }
     }
 }

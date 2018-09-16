@@ -1,0 +1,48 @@
+﻿@model ASP.NET.Demo.ViewModels.HomeTaskAssessmentViewModel
+
+<form asp-action="SaveEvaluation">
+    <div class="form-horizontal">
+        <h4>Evaluate</h4>
+        <hr />
+        @*<div asp-validation-summary="ModelOnly" class="text-danger"></div>*@
+        @*@Html.Hidden("courseId", ViewData["CourseId"])*@
+        @Html.HiddenFor(m => Model.HomeTaskId)
+        <div class="form-group">
+            <label class="col-md-5 control-label">@Model.Title</label>
+        </div>
+        <div class="form-group">
+            <label class="col-md-5 control-label">@Model.Description</label>
+        </div>
+        <div class="form-group">
+            <label class="col-md-5 control-label">@Model.Date</label>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Student name</th>
+                    <th>Pass</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (var i = 0; i < Model.HomeTaskStudents.Count; i++)
+                {
+                    <tr>
+                        <td>@Model.HomeTaskStudents[i].StudentFullName</td>
+                        <td>
+                            @Html.CheckBoxFor(m => Model.HomeTaskStudents[i].IsComplete)
+                        </td>
+                        @Html.HiddenFor(m => Model.HomeTaskStudents[i].StudentId)
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+        <div class="form-group">
+            <div class="col-md-offset-1 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+
+    </div>
+</form>

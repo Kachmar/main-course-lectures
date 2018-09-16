@@ -49,36 +49,38 @@
     </div>
 </form>
 
-
-<p>
-    <a asp-action="CreateNewHomeTask">Add New Home Task</a>
-</p>
+@if (ViewData["Action"] == "Edit")
+{
+    <p>
+        <a asp-action="Create" asp-controller="HomeTask" asp-route-courseId=@Model.Id>Add New Home Task</a>
+    </p>
+}
 <table class="table">
     <tbody>
-        @foreach (var homeTask in Model.HomeTasks)
+        @if (Model.HomeTasks != null)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => homeTask.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => homeTask.Date)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => homeTask.Description)
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", "HomeTask", new { id = homeTask.Id }) |
-                    @Html.ActionLink("Delete", "Delete", "HomeTask", new { homeTaskId = homeTask.Id, courseId = Model.Id })
-                </td>
-            </tr>
+            foreach (var homeTask in Model.HomeTasks)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => homeTask.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => homeTask.Date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => homeTask.Description)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Evaluate", "Evaluate", "HomeTask", new { id = homeTask.Id }) |
+                        @Html.ActionLink("Edit", "Edit", "HomeTask", new { id = homeTask.Id }) |
+                        @Html.ActionLink("Delete", "Delete", "HomeTask", new { homeTaskId = homeTask.Id, courseId = Model.Id })
+                    </td>
+                </tr>
+            }
         }
     </tbody>
 </table>
-@foreach (var homeTask in Model.HomeTasks)
-{
-    @Html.EditorFor(p => homeTask.Title);
-}
 <div>
     <a asp-action="Courses">Back to List</a>
 </div>

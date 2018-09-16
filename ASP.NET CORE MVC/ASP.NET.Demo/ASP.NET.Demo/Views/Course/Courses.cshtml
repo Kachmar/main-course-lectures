@@ -51,6 +51,7 @@
                     @Html.DisplayFor(modelItem => item.HomeTasksCount)
                 </td>
                 <td>
+                    @Html.ActionLink("Assign Students", "AssignStudents", new { id = item.Id }) |
                     @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
                     @Html.ActionLink("Delete", "Delete", new { id = item.Id })
                 </td>
