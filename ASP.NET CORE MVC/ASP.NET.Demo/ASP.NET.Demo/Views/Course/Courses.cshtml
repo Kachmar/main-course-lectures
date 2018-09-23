@@ -1,4 +1,5 @@
-﻿@model IEnumerable<ASP.NET.Demo.Models.Course>
+﻿
+@model IEnumerable<Models.Models.Course>
 
 
 <p>
@@ -23,7 +24,7 @@
                 @Html.DisplayNameFor(model => model.PassCredits)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.HomeTasksCount)
+                @Html.DisplayNameFor(model => model.HomeTasks.Count)
             </th>
             <th></th>
         </tr>
@@ -48,7 +49,7 @@
                     @Html.DisplayFor(modelItem => item.PassCredits)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.HomeTasksCount)
+                    @Html.DisplayFor(modelItem => item.HomeTasks.Count)
                 </td>
                 <td>
                     @Html.ActionLink("Assign Students", "AssignStudents", new { id = item.Id }) |

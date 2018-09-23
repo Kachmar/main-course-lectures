@@ -1,4 +1,4 @@
-﻿namespace ASP.NET.Demo.Models
+﻿namespace Models.Models
 {
     using System;
     using System.Collections.Generic;
@@ -14,8 +14,6 @@
         public DateTime EndDate { get; set; }
 
         public int PassCredits { get; set; }
-
-        public int HomeTasksCount { get; set; }
 
         public List<HomeTask> HomeTasks { get; set; }
 

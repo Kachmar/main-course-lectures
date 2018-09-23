@@ -5,14 +5,23 @@ namespace ASP.NET.Demo.Controllers
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
-    using ASP.NET.Demo.Models;
     using ASP.NET.Demo.ViewModels;
+
+    using DataAccess.ADO;
 
     using Microsoft.AspNetCore.Routing;
 
+    using Models.Models;
+
     public class HomeTaskController : Controller
     {
+        private readonly Repository repository;
+
+        public HomeTaskController(Repository repository)
+        {
+            this.repository = repository;
+        }
+
         [HttpGet]
         public IActionResult Create(int courseId)
         {
@@ -28,14 +37,14 @@ namespace ASP.NET.Demo.Controllers
             var routeValueDictionary = new RouteValueDictionary();
             routeValueDictionary.Add("id", courseId);
 
-            //TODO add logic
+            this.repository.CreateHomeTask(homeTask, courseId);
             return RedirectToAction("Edit", "Course", routeValueDictionary);
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var homeTask = CourseContainer.CourseCollection.SelectMany(p => p.HomeTasks).SingleOrDefault(h => h.Id == id);
+            HomeTask homeTask = this.repository.GetHomeTaskById(id);
             if (homeTask == null)
                 return this.NotFound();
             ViewData["Action"] = "Edit";
@@ -48,21 +57,13 @@ namespace ASP.NET.Demo.Controllers
         {
             if (homeTaskParameter == null)
             {
-                return this.NotFound();
+                return this.BadRequest();
             }
 
-            var homeTask = CourseContainer.CourseCollection.SelectMany(p => p.HomeTasks).SingleOrDefault(h => h.Id == homeTaskParameter.Id);
+            var homeTask = this.repository.GetHomeTaskById(homeTaskParameter.Id);
 
-            if (homeTask == null)
-            {
-                return this.NotFound();
-            }
-
-            homeTask.Date = homeTask.Date;
-            homeTask.Description = homeTaskParameter.Description;
-            homeTask.Title = homeTaskParameter.Title;
-            homeTask.Number = homeTaskParameter.Number;
             var routeValueDictionary = new RouteValueDictionary();
+            this.repository.UpdateHomeTask(homeTaskParameter);
             routeValueDictionary.Add("id", homeTask.Course.Id);
             return RedirectToAction("Edit", "Course", routeValueDictionary);
         }
@@ -70,22 +71,17 @@ namespace ASP.NET.Demo.Controllers
         [HttpGet]
         public IActionResult Delete(int homeTaskId, int courseId)
         {
-            var homeTask = CourseContainer.CourseCollection.SelectMany(p => p.HomeTasks).SingleOrDefault(h => h.Id == homeTaskId);
-            if (homeTask == null)
-            {
-                return this.NotFound();
-            }
+            this.repository.DeleteHomeTask(homeTaskId);
+
             var routeValueDictionary = new RouteValueDictionary();
             routeValueDictionary.Add("id", courseId);
-
-            CourseContainer.CourseCollection.ForEach(course => course.HomeTasks.Remove(homeTask));
             return RedirectToAction("Edit", "Course", routeValueDictionary);
         }
 
         [HttpGet]
         public IActionResult Evaluate(int id)
         {
-            var homeTask = CourseContainer.CourseCollection.SelectMany(p => p.HomeTasks).SingleOrDefault(h => h.Id == id);
+            var homeTask = this.repository.GetHomeTaskById(id);
 
             if (homeTask == null)
             {
@@ -104,7 +100,7 @@ namespace ASP.NET.Demo.Controllers
 
             if (homeTask.HomeTaskAssessments.Any())
             {
-                foreach (var homeTaskHomeTaskAssessment in homeTask.HomeTaskAssessments)
+                foreach (var homeTaskHomeTaskAssessment in homeTask.HomeTaskAssessments.Where(h => h.IsComplete))
                 {
                     assessmentViewModel.HomeTaskStudents.Add(new HomeTaskStudentViewModel()
                     {
@@ -129,7 +125,7 @@ namespace ASP.NET.Demo.Controllers
 
         public IActionResult SaveEvaluation(HomeTaskAssessmentViewModel model)
         {
-            var homeTask = CourseContainer.CourseCollection.SelectMany(p => p.HomeTasks).SingleOrDefault(h => h.Id == model.HomeTaskId);
+            var homeTask = this.repository.GetHomeTaskById(model.HomeTaskId);
 
             if (homeTask == null)
             {
@@ -138,29 +134,31 @@ namespace ASP.NET.Demo.Controllers
 
             if (homeTask.HomeTaskAssessments.Any())
             {
+                List<HomeTaskAssessment> assessments = new List<HomeTaskAssessment>();
                 foreach (var homeTaskStudent in model.HomeTaskStudents)
                 {
-                    var homeTaskAssessment =
-                        homeTask.HomeTaskAssessments.Single(p => p.Student.Id == homeTaskStudent.StudentId);
-                    homeTaskAssessment.IsComplete = homeTaskStudent.IsComplete;
+                    assessments.Add(new HomeTaskAssessment() { Date = DateTime.Now, Id = homeTaskStudent.Id, IsComplete = homeTaskStudent.IsComplete });
                 }
+                this.repository.UpdateHomeTaskAssessments(assessments);
             }
             else
             {
                 foreach (var homeTaskStudent in model.HomeTaskStudents)
                 {
-                    var student = CourseContainer.CourseCollection.SelectMany(p => p.Students)
-                        .Single(p => p.Id == homeTaskStudent.StudentId);
+                    var student = this.repository.GetStudentById(homeTaskStudent.StudentId);
                     homeTask.HomeTaskAssessments.Add(
                         new HomeTaskAssessment
                         {
-                            Id = new Random().Next(),
                             HomeTask = homeTask,
                             IsComplete = homeTaskStudent.IsComplete,
-                            Student = student
+                            Student = student,
+                            Date = DateTime.Now
+
                         });
+                    this.repository.CreateHomeTaskAssessments(homeTask.HomeTaskAssessments);
                 }
             }
+
 
 
             return RedirectToAction("Courses", "Course");

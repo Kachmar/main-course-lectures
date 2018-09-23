@@ -6,27 +6,32 @@ namespace ASP.NET.Demo.Controllers
     using System.Collections.Generic;
     using System.Linq;
 
-    using ASP.NET.Demo.Models;
     using ASP.NET.Demo.ViewModels;
+
+    using DataAccess.ADO;
+
+    using Models.Models;
 
     public class CourseController : Controller
     {
+        private readonly Repository repository;
+
+        public CourseController(Repository repository)
+        {
+            this.repository = repository;
+        }
 
         // GET
         public IActionResult Courses()
         {
-            return View(CourseContainer.CourseCollection);
+            return View(this.repository.GetAllCourses());
         }
 
         public IActionResult Delete(int id)
         {
-            var courseToRemove = CourseContainer.CourseCollection.SingleOrDefault(p => p.Id == id);
-            if (courseToRemove != null)
-            {
-                CourseContainer.CourseCollection.Remove(courseToRemove);
-            }
+            this.repository.DeleteCourse(id);
 
-            return View("Courses", CourseContainer.CourseCollection);
+            return RedirectToAction("Courses");
         }
 
         public IActionResult Create()
@@ -38,7 +43,7 @@ namespace ASP.NET.Demo.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var course = CourseContainer.CourseCollection.SingleOrDefault(p => p.Id == id);
+            Course course = this.repository.GetCourse(id);
             if (course == null)
             {
                 return this.NotFound();
@@ -54,20 +59,9 @@ namespace ASP.NET.Demo.Controllers
         {
             if (courseParameter == null)
             {
-                return this.NotFound();
+                return this.BadRequest();
             }
-            var course = CourseContainer.CourseCollection.SingleOrDefault(p => p.Id == courseParameter.Id);
-            if (course == null)
-            {
-                return this.NotFound();
-            }
-
-            course.Name = courseParameter.Name;
-            course.EndDate = courseParameter.EndDate;
-            course.StartDate = courseParameter.StartDate;
-            course.HomeTasksCount = courseParameter.HomeTasksCount;
-            course.PassCredits = courseParameter.PassCredits;
-
+            repository.UpdateCourse(courseParameter);
             return this.RedirectToAction(nameof(Courses));
         }
 
@@ -79,22 +73,19 @@ namespace ASP.NET.Demo.Controllers
                 return this.BadRequest();
             }
 
-            int maxCurrentId = CourseContainer.CourseCollection.Max((course) => course.Id);
-            courseParameter.Id = ++maxCurrentId;
-            CourseContainer.CourseCollection.Add(courseParameter);
+            this.repository.CreateCourse(courseParameter);
             return this.RedirectToAction(nameof(Courses));
         }
 
         [HttpGet]
         public IActionResult AssignStudents(int id)
         {
-            var allStudents = GetAllStudents();
-            var course = CourseContainer.CourseCollection.Single(p => p.Id == id);
+            var allStudents = this.repository.GetAllStudents();
+            var course = this.repository.GetCourse(id);
             CourseStudentAssignmentViewModel model = new CourseStudentAssignmentViewModel();
 
             model.Id = id;
             model.EndDate = course.EndDate;
-            model.HomeTasksCount = course.HomeTasksCount;
             model.Name = course.Name;
             model.StartDate = course.StartDate;
             model.PassCredits = course.PassCredits;
@@ -112,25 +103,9 @@ namespace ASP.NET.Demo.Controllers
         [HttpPost]
         public IActionResult AssignStudents(CourseStudentAssignmentViewModel assignmentViewModel)
         {
-            var allStudents = GetAllStudents();
-
-            var course = CourseContainer.CourseCollection.Single(p => p.Id == assignmentViewModel.Id);
-            course.Students.Clear();
-            foreach (var studentViewModel in assignmentViewModel.Students)
-            {
-                var student = allStudents.Single(p => p.Id == studentViewModel.StudentId);
-                if (studentViewModel.IsAssigned)
-                {
-                    course.Students.Add(student);
-                }
-            }
+            this.repository.SetStudentsToCourse(assignmentViewModel.Id, assignmentViewModel.Students.Where(p=>p.IsAssigned).Select(student => student.StudentId));
 
             return RedirectToAction("Courses");
-        }
-
-        private static List<Student> GetAllStudents()
-        {
-            return CourseContainer.CourseCollection.SelectMany(p => p.Students).Distinct().ToList();
         }
     }
 }

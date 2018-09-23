@@ -1,4 +1,4 @@
-﻿namespace ASP.NET.Demo.Models
+﻿namespace Models.Models
 {
     using System.Collections.Generic;
 

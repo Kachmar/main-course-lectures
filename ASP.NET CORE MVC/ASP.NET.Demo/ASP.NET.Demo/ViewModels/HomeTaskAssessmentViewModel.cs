@@ -3,8 +3,6 @@
     using System;
     using System.Collections.Generic;
 
-    using ASP.NET.Demo.Models;
-
     public class HomeTaskAssessmentViewModel
     {
         public DateTime Date { get; set; }
@@ -22,6 +20,8 @@
 
     public class HomeTaskStudentViewModel
     {
+        public int Id { get; set; }
+
         public int StudentId { get; set; }
 
         public string StudentFullName { get; set; }

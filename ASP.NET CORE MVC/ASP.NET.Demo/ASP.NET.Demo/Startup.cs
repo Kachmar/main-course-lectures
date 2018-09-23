@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ASP.NET.Demo
 {
+    using DataAccess.ADO;
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -22,6 +24,7 @@ namespace ASP.NET.Demo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddScoped<Repository, Repository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

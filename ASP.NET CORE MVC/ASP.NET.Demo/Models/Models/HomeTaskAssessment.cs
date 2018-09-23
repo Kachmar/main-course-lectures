@@ -1,4 +1,4 @@
-﻿namespace ASP.NET.Demo.Models
+﻿namespace Models.Models
 {
     using System;
 
@@ -7,6 +7,8 @@
         public int Id { get; set; }
 
         public bool IsComplete { get; set; }
+
+        public DateTime Date { get; set; }
 
         public HomeTask HomeTask { get; set; }
 
