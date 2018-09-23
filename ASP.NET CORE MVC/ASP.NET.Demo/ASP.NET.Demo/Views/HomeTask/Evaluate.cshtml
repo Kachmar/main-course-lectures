@@ -4,8 +4,6 @@
     <div class="form-horizontal">
         <h4>Evaluate</h4>
         <hr />
-        @*<div asp-validation-summary="ModelOnly" class="text-danger"></div>*@
-        @*@Html.Hidden("courseId", ViewData["CourseId"])*@
         @Html.HiddenFor(m => Model.HomeTaskId)
         <div class="form-group">
             <label class="col-md-5 control-label">@Model.Title</label>

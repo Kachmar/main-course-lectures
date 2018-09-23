@@ -38,6 +38,11 @@ namespace ASP.NET.Demo.Controllers
         [HttpPost]
         public IActionResult Edit(Student model)
         {
+            if (!ModelState.IsValid)
+            {
+                ViewData["Action"] = "Edit";
+                return this.View("Edit", model);
+            }
             this.repository.UpdateStudent(model);
 
             return RedirectToAction("Students");
@@ -62,6 +67,12 @@ namespace ASP.NET.Demo.Controllers
         [HttpPost]
         public IActionResult Create(Student model)
         {
+            if (!ModelState.IsValid)
+            {
+                ViewData["Action"] = "Create";
+                return this.View("Edit", model);
+            }
+
             this.repository.CreateStudent(model);
             return RedirectToAction("Students");
 

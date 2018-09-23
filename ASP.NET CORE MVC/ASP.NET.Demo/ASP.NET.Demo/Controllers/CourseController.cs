@@ -73,6 +73,12 @@ namespace ASP.NET.Demo.Controllers
                 return this.BadRequest();
             }
 
+            if (!ModelState.IsValid)
+            {
+                ViewData["action"] = nameof(this.Create);
+
+                return this.View("Edit", courseParameter);
+            }
             this.repository.CreateCourse(courseParameter);
             return this.RedirectToAction(nameof(Courses));
         }
@@ -103,7 +109,7 @@ namespace ASP.NET.Demo.Controllers
         [HttpPost]
         public IActionResult AssignStudents(CourseStudentAssignmentViewModel assignmentViewModel)
         {
-            this.repository.SetStudentsToCourse(assignmentViewModel.Id, assignmentViewModel.Students.Where(p=>p.IsAssigned).Select(student => student.StudentId));
+            this.repository.SetStudentsToCourse(assignmentViewModel.Id, assignmentViewModel.Students.Where(p => p.IsAssigned).Select(student => student.StudentId));
 
             return RedirectToAction("Courses");
         }

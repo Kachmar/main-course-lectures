@@ -34,6 +34,12 @@ namespace ASP.NET.Demo.Controllers
         [HttpPost]
         public IActionResult Create(HomeTask homeTask, int courseId)
         {
+            if (!ModelState.IsValid)
+            {
+                ViewData["Action"] = "Create";
+                ViewData["CourseId"] = courseId;
+                return View("Edit", homeTask);
+            }
             var routeValueDictionary = new RouteValueDictionary();
             routeValueDictionary.Add("id", courseId);
 
@@ -55,9 +61,11 @@ namespace ASP.NET.Demo.Controllers
         [HttpPost]
         public IActionResult Edit(HomeTask homeTaskParameter)
         {
-            if (homeTaskParameter == null)
+            if (!ModelState.IsValid)
             {
-                return this.BadRequest();
+                ViewData["Action"] = "Edit";
+
+                return View(homeTaskParameter);
             }
 
             var homeTask = this.repository.GetHomeTaskById(homeTaskParameter.Id);
