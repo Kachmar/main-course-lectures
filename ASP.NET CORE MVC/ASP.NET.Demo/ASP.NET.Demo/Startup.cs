@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using DataAccess.ADO;
 
 namespace ASP.NET.Demo
 {
-    using DataAccess.ADO;
+
+
 
     public class Startup
     {
@@ -24,6 +26,7 @@ namespace ASP.NET.Demo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.Configure<RepositoryOptions>(Configuration);
             services.AddScoped<Repository, Repository>();
         }
 

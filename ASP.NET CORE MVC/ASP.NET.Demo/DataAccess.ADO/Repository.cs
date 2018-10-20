@@ -5,10 +5,19 @@
     using System.Data.SqlClient;
     using System.Linq;
 
+    using Microsoft.Extensions.Options;
+
     using Models.Models;
 
     public class Repository
     {
+        public string ConnectionString { get; set; }
+
+        public Repository(IOptions<RepositoryOptions> options)
+        {
+            this.ConnectionString = options.Value.DefaultConnectionString;
+        }
+
         public List<Student> GetAllStudents()
         {
             using (SqlConnection connection = GetConnection())
@@ -551,8 +560,8 @@ SELECT CAST(scope_identity() AS int)
 
         private SqlConnection GetConnection()
         {
-            string connectionString = "User ID=demo;Password=demo;Initial Catalog=BaseCourse;Data Source=localhost";
-            var connection = new SqlConnection(connectionString);
+          
+            var connection = new SqlConnection(ConnectionString);
             connection.Open();
             return connection;
         }
