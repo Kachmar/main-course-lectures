@@ -190,6 +190,13 @@ INSERT INTO [dbo].[HomeTaskAssessment]
 
         public void DeleteCourse(int courseId)
         {
+            using (SqlConnection connection = GetConnection())
+            {
+                SqlCommand sqlCommand = new SqlCommand(
+                    $@"DELETE FROM [dbo].[Course]
+                WHERE Id={courseId}", connection);
+                sqlCommand.ExecuteNonQuery();
+            }
         }
 
         public void UpdateStudent(Student student)
