@@ -37,25 +37,26 @@ namespace ASP.NET_CORE_WEB.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-       //Calling UseMvc without builder will not add a default route. Instead the application will construct routes based on the Route attribute 
+            //Calling UseMvc without builder will not add a default route.
+            //Instead the application will construct routes based on the Route attribute 
             //on controller class.
-            //However when we add MapRoute, we can pass the requests the class, that is not inherited from ControllerBase class nor has any attributes.
-            //Simply using its name and method name prefix/CustomWithoutBaseClass/GetValue
+            //However when we add MapRoute, we can pass the requests to the class, that is not inherited from ControllerBase class nor has any attributes.
+            //Simply using its name and method name prefix/CustomWithoutBaseClass/Abracadabra
             app.UseMvc(
                 builder =>
                     {
-                        //this route (error/x/y) will throw an error, cause we are using default MVCRouteHandler,
+                        //this route (error/x/y) will return error, cause we are using default MVCRouteHandler,
                         //and it expects the Controller and action name among RouteValues.
-                        builder.MapRoute("errorous", "error/x/y");
+                        //builder.MapRoute("errorous", "error/{x}/{y}");
 
-                        builder.MapRoute("2", "prefix/{controller=Values}/{action=Index}/{id?}");
+                        builder.MapRoute("demoRoute", "prefix/{controller=Values}/{action=Index}/{id?}");
                         //this route shows how to hardcode the route
-                        builder.MapRoute(
-                                             name: "routeThatHasHardcodedActionAndController",
-                                             template: "en-US/Products/{id}",
-                                             defaults: new { controller = "Values", action = "" },
-                                             constraints: new { id = new IntRouteConstraint() },
-                                             dataTokens: new { locale = "en-US" });
+                        //builder.MapRoute(
+                        //                     name: "routeThatHasHardcodedActionAndController",
+                        //                     template: "en-US/Products/{id}",
+                        //                     defaults: new { controller = "Values", action = "" },
+                        //                     constraints: new { id = new IntRouteConstraint() },
+                        //                     dataTokens: new { locale = "en-US" });
                     });
 
             //Also we might want to add middleware with custom route handler and below is a sample

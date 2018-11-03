@@ -8,42 +8,39 @@ using Microsoft.AspNetCore.Mvc;
 namespace ASP.NET_CORE_WEB.API.Controllers
 {
     using Microsoft.AspNetCore.Routing;
-
-    // [Route("api/[controller]")]
-    //[ApiController]
+    [Route("Custom")]
     public class CustomWithoutBaseClassController
     {
-        //Somehow when navigating to /api/CustomWithoutBaseClass rout, it calls Abracadabra
-        public string GetValue()
+        //Somehow when navigating to /prefix/CustomWithoutBaseClass/Abracadabra route, it calls Abracadabra
+        public string Abracadabra()
         {
-            return "Value from custom";
+            return "Value from Abracadabra";
         }
-        //Adding the thing, breaks the behaviour
-        //public string GetValue2()
-        //{
-        //    return "Value from custom2";
-        //}
 
 
         //Having the class without any attributes, it is enough to have route attr on method
         // to serve web request
-        [Route("api/Custom")]
+        [Route("")]
+        [Route("index")]
+        [Route("MyAction")]
         public string WithRoute()
         {
-            
+
             return "With route";
         }
 
+        // This is an example of the need ActionResult, because we want to return either string result
+        // or http status code
         // multiple return value
         // api/WithActionResult?returnError=true
-        [Route("api/WithActionResult")]
+        [Route("[action]")]
         public ActionResult<string> WithActionResult([FromQuery] bool returnError)
         {
             if (returnError)
             {
                 return new BadRequestResult();
             }
-            
+
             return "With route";
         }
 

@@ -10,8 +10,6 @@ namespace ASP.NET_CORE_WEB.API.Controllers
     using Microsoft.CodeAnalysis.Options;
     using Microsoft.Extensions.Options;
 
-    //[Route("api/[controller]")]
-    //[ApiController]
     public class StudentsController : ControllerBase
     {
         private readonly IOptions<ConfigurationContainer> options;
