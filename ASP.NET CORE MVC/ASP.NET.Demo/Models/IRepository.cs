@@ -23,5 +23,7 @@ namespace DataAccess.ADO
         void UpdateHomeTask(HomeTask homeTask);
         void UpdateHomeTaskAssessments(List<HomeTaskAssessment> homeTaskHomeTaskAssessments);
         void UpdateStudent(Student student);
+
+        void SaveChanges();
     }
 }

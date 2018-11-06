@@ -5,10 +5,20 @@ namespace DataAccess.EF
 {
     using DataAccess.ADO;
 
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Options;
+
     using Models.Models;
 
-    public class Repository : IRepository
+    public class Repository : IRepository, IDisposable
     {
+        private UniversityContext context;
+
+        public Repository(DbContextOptions options)
+        {
+            context = new UniversityContext(options);
+        }
+
         public Course CreateCourse(Course course)
         {
             throw new NotImplementedException();
@@ -41,7 +51,7 @@ namespace DataAccess.EF
 
         public void DeleteStudent(int studentId)
         {
-            throw new NotImplementedException();
+            this.context.Remove(this.context.Students.Find(studentId));
         }
 
         public List<Course> GetAllCourses()
@@ -96,7 +106,16 @@ namespace DataAccess.EF
 
         public void UpdateStudent(Student student)
         {
-            throw new NotImplementedException();
+            this.context.Attach(student).State = EntityState.Modified;
+        }
+
+        public void SaveChanges()
+        {
+            this.context.SaveChanges();
+        }
+        public void Dispose()
+        {
+            this.context?.Dispose();
         }
     }
 }

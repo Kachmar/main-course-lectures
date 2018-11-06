@@ -7,9 +7,9 @@
 
     public class UniversityContext : DbContext
     {
-        public string ConnectionString { get; set; }
 
-        public UniversityContext(IOptions<RepositoryOptions> options) : base(options.Value.DefaultConnectionString)
+
+        public UniversityContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
         {
         }
 

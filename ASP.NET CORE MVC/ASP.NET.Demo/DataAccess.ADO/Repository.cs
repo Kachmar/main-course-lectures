@@ -230,6 +230,11 @@ UPDATE [dbo].[Student]
             }
         }
 
+        public void SaveChanges()
+        {
+            throw new NotImplementedException();
+        }
+
         public void UpdateCourse(Course course)
         {
             using (SqlConnection connection = GetConnection())
