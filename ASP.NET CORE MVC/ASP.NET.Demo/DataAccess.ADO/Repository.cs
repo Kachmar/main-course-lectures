@@ -9,7 +9,7 @@
 
     using Models.Models;
 
-    public class Repository
+    public class Repository : IRepository
     {
         public string ConnectionString { get; set; }
 
@@ -567,7 +567,7 @@ SELECT CAST(scope_identity() AS int)
 
         private SqlConnection GetConnection()
         {
-          
+
             var connection = new SqlConnection(ConnectionString);
             connection.Open();
             return connection;
