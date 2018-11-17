@@ -1,36 +1,32 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace ASP.NET.Demo.Controllers
+﻿namespace ASP.NET.Demo.Controllers
 {
-    using System.Linq;
+    using DataAccess.EF;
 
-    using ASP.NET.Demo.ViewModels;
-
-    using DataAccess.ADO;
+    using Microsoft.AspNetCore.Mvc;
 
     using Models.Models;
 
+    using Service;
+
     public class StudentController : Controller
     {
-        private readonly Repository repository;
+        private readonly IStudentService studentService;
 
-        public StudentController(Repository repository)
+        public StudentController(IStudentService studentService)
         {
-            this.repository = repository;
+            this.studentService = studentService;
         }
 
         // GET
         public IActionResult Students()
         {
-
-
-            return View(repository.GetAllStudents());
+            return View(this.studentService.GetAllStudents());
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var student = repository.GetStudentById(id);
+            var student = this.studentService.GetStudentById(id);
             ViewData["Action"] = "Edit";
             return this.View(student);
         }
@@ -43,7 +39,7 @@ namespace ASP.NET.Demo.Controllers
                 ViewData["Action"] = "Edit";
                 return this.View("Edit", model);
             }
-            this.repository.UpdateStudent(model);
+            this.studentService.UpdateStudent(model);
 
             return RedirectToAction("Students");
         }
@@ -51,7 +47,7 @@ namespace ASP.NET.Demo.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            this.repository.DeleteStudent(id);
+            this.studentService.DeleteStudent(id);
             return RedirectToAction("Students");
         }
 
@@ -73,7 +69,7 @@ namespace ASP.NET.Demo.Controllers
                 return this.View("Edit", model);
             }
 
-            this.repository.CreateStudent(model);
+            this.studentService.CreateStudent(model);
             return RedirectToAction("Students");
 
         }

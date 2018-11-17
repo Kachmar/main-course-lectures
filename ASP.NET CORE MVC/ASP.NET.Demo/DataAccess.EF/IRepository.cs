@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
-using Models.Models;
+
 
 namespace DataAccess.ADO
 {
+    using Models.Models;
+
     public interface IRepository
     {
         Course CreateCourse(Course course);

@@ -5,7 +5,7 @@
 
     using Microsoft.EntityFrameworkCore;
 
-    public class UniversityRepository<T> where T : class
+    public class UniversityRepository<T> : IUniversityRepository<T> where T : class
     {
         UniversityContext context = new UniversityContext(null);
 

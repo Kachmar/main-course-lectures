@@ -13,13 +13,15 @@ namespace ASP.NET.Demo.Controllers
 
     using Models.Models;
 
+    using Service;
+
     public class HomeTaskController : Controller
     {
-        private readonly Repository repository;
+        private readonly IHomeTaskService homeTaskService;
 
-        public HomeTaskController(Repository repository)
+        public HomeTaskController(IHomeTaskService homeTaskService)
         {
-            this.repository = repository;
+            this.homeTaskService = homeTaskService;
         }
 
         [HttpGet]
@@ -43,14 +45,14 @@ namespace ASP.NET.Demo.Controllers
             var routeValueDictionary = new RouteValueDictionary();
             routeValueDictionary.Add("id", courseId);
 
-            this.repository.CreateHomeTask(homeTask, courseId);
+            this.homeTaskService.CreateHomeTask(homeTask, courseId);
             return RedirectToAction("Edit", "Course", routeValueDictionary);
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            HomeTask homeTask = this.repository.GetHomeTaskById(id);
+            HomeTask homeTask = this.homeTaskService.GetHomeTaskById(id);
             if (homeTask == null)
                 return this.NotFound();
             ViewData["Action"] = "Edit";
@@ -68,10 +70,10 @@ namespace ASP.NET.Demo.Controllers
                 return View(homeTaskParameter);
             }
 
-            var homeTask = this.repository.GetHomeTaskById(homeTaskParameter.Id);
+            var homeTask = this.homeTaskService.GetHomeTaskById(homeTaskParameter.Id);
 
             var routeValueDictionary = new RouteValueDictionary();
-            this.repository.UpdateHomeTask(homeTaskParameter);
+            this.homeTaskService.UpdateHomeTask(homeTaskParameter);
             routeValueDictionary.Add("id", homeTask.Course.Id);
             return RedirectToAction("Edit", "Course", routeValueDictionary);
         }
@@ -79,7 +81,7 @@ namespace ASP.NET.Demo.Controllers
         [HttpGet]
         public IActionResult Delete(int homeTaskId, int courseId)
         {
-            this.repository.DeleteHomeTask(homeTaskId);
+            this.homeTaskService.DeleteHomeTask(homeTaskId);
 
             var routeValueDictionary = new RouteValueDictionary();
             routeValueDictionary.Add("id", courseId);
@@ -89,7 +91,7 @@ namespace ASP.NET.Demo.Controllers
         [HttpGet]
         public IActionResult Evaluate(int id)
         {
-            var homeTask = this.repository.GetHomeTaskById(id);
+            var homeTask = this.homeTaskService.GetHomeTaskById(id);
 
             if (homeTask == null)
             {
@@ -133,13 +135,13 @@ namespace ASP.NET.Demo.Controllers
 
         public IActionResult SaveEvaluation(HomeTaskAssessmentViewModel model)
         {
-            var homeTask = this.repository.GetHomeTaskById(model.HomeTaskId);
+            var homeTask = this.homeTaskService.GetHomeTaskById(model.HomeTaskId);
 
             if (homeTask == null)
             {
                 return this.NotFound();
             }
-
+            this.homeTaskService.SaveEvaluation(homeTask);
             if (homeTask.HomeTaskAssessments.Any())
             {
                 List<HomeTaskAssessment> assessments = new List<HomeTaskAssessment>();
@@ -147,7 +149,7 @@ namespace ASP.NET.Demo.Controllers
                 {
                     assessments.Add(new HomeTaskAssessment() { Date = DateTime.Now, Id = homeTaskStudent.Id, IsComplete = homeTaskStudent.IsComplete });
                 }
-                this.repository.UpdateHomeTaskAssessments(assessments);
+                this.homeTaskService.UpdateHomeTaskAssessments(assessments);
             }
             else
             {
