@@ -10,12 +10,35 @@ namespace UnderstandingLINQ
     {
         static void Main(string[] args)
         {
+            Owner ownerMax = new Owner() { Country = "Usa", Name = "Max" };
+            Owner ownerPetro = new Owner() { Country = "Ukraine", Name = "Petro" };
+            Owner ownerSuzy = new Owner() { Country = "Belarus", Name = "Suzy" };
             List<Car> myCars = new List<Car>() {
-                                                       new Car() { VIN="A1", Make = "BMW", Model= "550i", StickerPrice=55000, Year=2009},
-                                                       new Car() { VIN="B2", Make="Toyota", Model="4Runner", StickerPrice=35000, Year=2010},
-                                                       new Car() { VIN="C3", Make="BMW", Model = "745li", StickerPrice=75000, Year=2008},
-                                                       new Car() { VIN="D4", Make="Ford", Model="Escape", StickerPrice=25000, Year=2008},
-                                                       new Car() { VIN="E5", Make="BMW", Model="55i", StickerPrice=57000, Year=2010}
+                                                       new Car()
+                                                           {
+                                                               VIN="A1", Make = "BMW", Model= "550i", StickerPrice=55000, Year=2009,
+                                                               Owner = ownerSuzy,
+                                                           },
+                                                       new Car()
+                                                           {
+                                                               VIN="B2", Make="Toyota", Model="4Runner", StickerPrice=35000, Year=2010,
+                                                               Owner = ownerSuzy
+                                                           },
+                                                       new Car()
+                                                           {
+                                                               VIN="C3", Make="BMW", Model = "745li", StickerPrice=75000, Year=2008,
+                                                               Owner = ownerMax
+                                                           },
+                                                       new Car()
+                                                           {
+                                                               VIN="D4", Make="Ford", Model="Escape", StickerPrice=25000, Year=2008,
+                                                               Owner = ownerPetro
+                                                           },
+                                                       new Car()
+                                                           {
+                                                               VIN="E5", Make="BMW", Model="55i", StickerPrice=57000, Year=2010,
+                                                               Owner = ownerMax
+                                                           }
                                                    };
 
 
@@ -34,7 +57,7 @@ namespace UnderstandingLINQ
             var orderedCars = from car in myCars
                               orderby car.Year descending
                               select car;
-            var orderedCars = myCars.OrderByDescending(p => p.Year);
+            //var orderedCars = myCars.OrderByDescending(p => p.Year);
 
             //foreach (var car in orderedCars)
             //{
@@ -45,6 +68,7 @@ namespace UnderstandingLINQ
             var firstBMW = myCars.OrderByDescending(p => p.Year).First(p => p.Make == "BMW");
             Console.WriteLine(firstBMW.VIN);
 
+            //I want to merge all the string from the array to single string with some transformation 
             //Aggregate  
             string[] MySkills = {
                                         "C#.net",
@@ -54,13 +78,16 @@ namespace UnderstandingLINQ
                                         "EntityFramework",
                                         "Swagger",
                                         "Web-Api",
-                                        "OrcharCMS",
+                                        "OrchardCMS",
                                         "Jquery",
                                         "Sqlserver",
                                         "Docusign"
                                     };
             var commaSeperatedString = MySkills.Aggregate((current, next) => current + ", " + next);
 
+
+            //Split
+            string[] splitValues = commaSeperatedString.Split(',');
 
             //Commonly used 'Any';
             var anyCheapCars = myCars.Any(car => car.StickerPrice < 10000);
@@ -79,7 +106,7 @@ namespace UnderstandingLINQ
 
 
             Console.WriteLine(myCars.GetType());
-            var orderedCars = myCars.OrderByDescending(p => p.Year);
+            //var orderedCars = myCars.OrderByDescending(p => p.Year);
             Console.WriteLine(orderedCars.GetType());
 
             var bmws = myCars.Where(p => p.Make == "BMW" && p.Year == 2010);
@@ -89,7 +116,7 @@ namespace UnderstandingLINQ
             var newCars = from car in myCars
                           where car.Make == "BMW"
                                 && car.Year == 2010
-                          select new { car.Make, car.Model };
+                          select new { car.Make, car.Model, IsNew = true };
 
             Console.WriteLine(newCars.GetType());
             //Group By
@@ -113,9 +140,40 @@ namespace UnderstandingLINQ
             removeBrands(myCars);
             var anyBmw = bmwCars.Any(car => car.Make == "BMW");
             Console.WriteLine($"there are BMW: {anyBmw}");
-            Console.ReadLine();
 
+            //I have a queue of car buyers from Ukraine and they should become new owners of the cars
+            //ZIP
+            Owner[] newOwner = new Owner[] { new Owner() { Country = "Ukraine", Name = "Andrii" },
+                                                   new Owner() { Country = "Ukraine", Name = "Vasyl"},
+                                                   new Owner() { Country = "Ukraine", Name = "Mykola" }
+                                               };
+            //var result = newOwner.Zip(
+            //    myCars,
+            //    (owner, car) =>
+            //    {
+            //        car.Owner = owner;
+            //        return car;
+            //    });
+            //Lets display new car and their owners
+
+
+            //Enumerable.Range
+            foreach (var i in Enumerable.Range(1, 3))
+            {
+                Console.WriteLine(myCars[i].Model);
+            }
+
+            //I want to get a list of all car owners given the myCars collection
+            //SelectMany
+            var allOwners = myCars.SelectMany((car, i) => car.AllOwners);
+
+
+            //Single car
+            var singleCar = myCars.Single(car => car.Model == "BMW");
+            var firstCar = myCars.First(car => car.Make == "BMW");
+            Console.ReadLine();
         }
+
         private static void removeBrands(List<Car> cars)
         {
             cars.ForEach(car => car.Make = "Anonymous");
@@ -124,10 +182,37 @@ namespace UnderstandingLINQ
 
     class Car
     {
+        private Owner owner;
+        public Car()
+        {
+            AllOwners = new List<Owner>();
+        }
         public string VIN { get; set; }
         public string Make { get; set; }
         public string Model { get; set; }
         public int Year { get; set; }
+
         public double StickerPrice { get; set; }
+
+        public Owner Owner
+        {
+            get
+            {
+                return owner;
+            }
+            set
+            {
+                owner = value;
+                AllOwners.Add(value);
+            }
+        }
+
+        public List<Owner> AllOwners { get; set; }
+    }
+
+    class Owner
+    {
+        public string Name { get; set; }
+        public string Country { get; set; }
     }
 }
