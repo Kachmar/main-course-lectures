@@ -113,5 +113,37 @@ namespace ASP.NET.Demo.Controllers
 
             return RedirectToAction("Courses");
         }
+
+        [HttpGet]
+        public IActionResult AssignLecturers(int id)
+        {
+            var allLecturers = this.repository.GetAllLecturers();
+            var course = this.repository.GetCourse(id);
+            CourseLecturerAssignmentViewModel model = new CourseLecturerAssignmentViewModel();
+
+            model.Id = id;
+            model.EndDate = course.EndDate;
+            model.Name = course.Name;
+            model.StartDate = course.StartDate;
+            model.PassCredits = course.PassCredits;
+            model.Lecturers = new List<LecturersViewModel>();
+
+            foreach (var lecturer in allLecturers)
+            {
+                bool isAssigned = course.Lecturers.Any(p => p.Id == lecturer.Id);
+                model.Lecturers.Add(new LecturersViewModel() { LecturerId = lecturer.Id, Name = lecturer.Name, IsAssigned = isAssigned });
+            }
+
+            return this.View(model);
+        }
+
+        [HttpPost]
+        public IActionResult AssignLecturers(CourseLecturerAssignmentViewModel model)
+        {
+            this.repository.SetLecturersToCourse(model.Id, model.Lecturers.Where(p => p.IsAssigned).Select(lecturer => lecturer.LecturerId));
+
+            return RedirectToAction("Courses");
+
+        }
     }
 }

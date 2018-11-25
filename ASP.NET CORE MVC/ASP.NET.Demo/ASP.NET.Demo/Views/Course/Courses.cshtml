@@ -24,7 +24,7 @@
                 @Html.DisplayNameFor(model => model.PassCredits)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.HomeTasks.Count)
+                Hometasks count
             </th>
             <th></th>
         </tr>
@@ -52,6 +52,7 @@
                     @Html.DisplayFor(modelItem => item.HomeTasks.Count)
                 </td>
                 <td>
+                    @Html.ActionLink("Assign Lecturers", "AssignLecturers", new { id = item.Id }) |
                     @Html.ActionLink("Assign Students", "AssignStudents", new { id = item.Id }) |
                     @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
                     @Html.ActionLink("Delete", "Delete", new { id = item.Id })
