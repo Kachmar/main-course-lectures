@@ -2,8 +2,6 @@
 namespace ADO.NET
 {
     using System;
-    using System.Configuration;
-    using System.Data.SqlClient;
     using System.Collections.Generic;
     using System.Linq;
 
