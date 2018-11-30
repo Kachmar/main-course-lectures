@@ -9,6 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Fundamentals
 {
+    using Fundamentals.DependancyInjection;
+
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
+
     public class Startup
     {
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -29,12 +34,20 @@ namespace Fundamentals
             //make dependancy container aware of service
             //lets not add service, so that app crashes.
             services.AddTransient<ScopeOrchestration>();
+
+            //
+            services.AddTransient<IClassWithInterface, ClassWithInterface>();
+            services.AddTransient<ClassDependingOnInterface>();
+            services.AddTransient<ClassWithDependancies>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IConfiguration configuration, ILoggerFactory loggerFactory)
         {
-            ShowScopesDemo(app);
+            var logger = loggerFactory.CreateLogger("Demo");
+
+
+            //  ShowScopesDemo(app);
             app.UseStaticFiles();
 
             app.MapWhen(
@@ -56,34 +69,58 @@ namespace Fundamentals
                     });
 
             //This adds middleware
+            app.UseMiddleware<MyRequestHandler>();
+            app.Use(async (context, next) => { next(); });
             app.Use(
                 (Httpcontext, func) =>
+                {
+                    foreach (var keyValuePair in Httpcontext.Request.Headers)
                     {
-                        Httpcontext.Response.WriteAsync("This is response from middleware 1");
-                        return func.Invoke();
-                    });
+                        logger.Log(LogLevel.Information, keyValuePair.Value);
+                    }
+
+                    Httpcontext.Response.WriteAsync("This is response from middleware 1");
+                    return func();
+                });
             app.Use(
                 (Httpcontext, func) =>
                     {
                         return Httpcontext.Response.WriteAsync("This is response from middleware 2");
-                        // return func.Invoke();
+                        // return func();
                     });
             //This is the last item in a chain, and Run means no further items in the pipeline
             app.Run(async (context) =>
             {
                 await context.Response.WriteAsync("Hello World!");
             });
+            ShowDIDemo(app.ApplicationServices);
         }
 
         private void ShowScopesDemo(IApplicationBuilder app)
         {
             app.Run(async (context) =>
                 {
-                   
+
                     ScopeOrchestration scopeOrchestration = context.RequestServices.GetService<ScopeOrchestration>();
 
                     await context.Response.WriteAsync(scopeOrchestration.GetScopesStringTask());
                 });
+        }
+
+        private void ShowDIDemo(IServiceProvider appApplicationServices)
+        {
+            ClassWithDependancies viaConstructors = this.GetClassWithDependancies();
+            //or
+            ClassWithDependancies fromDi = appApplicationServices.GetService<ClassWithDependancies>();
+        }
+
+        private ClassWithDependancies GetClassWithDependancies()
+        {
+            ClassWithInterface classWithInterface = new ClassWithInterface();
+            ClassDependingOnInterface classDependingOnInterface = new ClassDependingOnInterface(classWithInterface);
+            ClassWithDependancies classWithDependancies = new ClassWithDependancies(classDependingOnInterface);
+
+            return classWithDependancies;
         }
     }
 }
