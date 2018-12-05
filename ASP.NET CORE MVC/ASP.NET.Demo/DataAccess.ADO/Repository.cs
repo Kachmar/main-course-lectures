@@ -171,6 +171,13 @@ INSERT INTO [dbo].[HomeTaskAssessment]
 
         public void DeleteCourse(int courseId)
         {
+            using (SqlConnection connection = GetConnection())
+            {
+                SqlCommand sqlCommand = new SqlCommand(
+                    $@"DELETE FROM [dbo].[Course]
+                WHERE Id={courseId}", connection);
+                sqlCommand.ExecuteNonQuery();
+            }
         }
 
         public void UpdateStudent(Student student)
@@ -706,8 +713,6 @@ SELECT CAST(scope_identity() AS int)
                         student.GitHubLink = reader.IsDBNull(5) ? "" : reader.GetString(5);
                         student.Notes = reader.IsDBNull(6) ? "" : reader.GetString(6);
 
-                        //student.Courses = GetStudentCourses(student.Id);
-                        //student.HomeTaskAssessments = this.GetHomeTaskAssessmentsByStudentId(student.Id);
                         result.Add(student);
                     }
 
