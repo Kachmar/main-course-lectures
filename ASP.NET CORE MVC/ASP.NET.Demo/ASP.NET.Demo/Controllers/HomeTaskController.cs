@@ -108,14 +108,15 @@ namespace ASP.NET.Demo.Controllers
 
             if (homeTask.HomeTaskAssessments.Any())
             {
-                foreach (var homeTaskHomeTaskAssessment in homeTask.HomeTaskAssessments.Where(h => h.IsComplete))
+                foreach (var homeTaskHomeTaskAssessment in homeTask.HomeTaskAssessments)
                 {
                     assessmentViewModel.HomeTaskStudents.Add(new HomeTaskStudentViewModel()
                     {
 
                         StudentFullName = homeTaskHomeTaskAssessment.Student.Name,
                         StudentId = homeTaskHomeTaskAssessment.Student.Id,
-                        IsComplete = homeTaskHomeTaskAssessment.IsComplete
+                        IsComplete = homeTaskHomeTaskAssessment.IsComplete,
+                        HomeTaskAssessmentId = homeTaskHomeTaskAssessment.Id
                     });
                 }
 
@@ -145,7 +146,7 @@ namespace ASP.NET.Demo.Controllers
                 List<HomeTaskAssessment> assessments = new List<HomeTaskAssessment>();
                 foreach (var homeTaskStudent in model.HomeTaskStudents)
                 {
-                    assessments.Add(new HomeTaskAssessment() { Date = DateTime.Now, Id = homeTaskStudent.Id, IsComplete = homeTaskStudent.IsComplete });
+                    assessments.Add(new HomeTaskAssessment() { Id = homeTaskStudent.HomeTaskAssessmentId, Date = DateTime.Now, IsComplete = homeTaskStudent.IsComplete });
                 }
                 this.repository.UpdateHomeTaskAssessments(assessments);
             }
@@ -163,8 +164,9 @@ namespace ASP.NET.Demo.Controllers
                             Date = DateTime.Now
 
                         });
-                    this.repository.CreateHomeTaskAssessments(homeTask.HomeTaskAssessments);
                 }
+                this.repository.CreateHomeTaskAssessments(homeTask.HomeTaskAssessments);
+
             }
 
 

@@ -18,7 +18,7 @@
             this.ConnectionString = options.Value.DefaultConnectionString;
         }
 
-        public List<Student> GetAllStudents()
+        public List<Student> GetAllStudents(bool loadAllDependencies = true)
         {
             using (SqlConnection connection = GetConnection())
             {
@@ -38,9 +38,12 @@
                         student.Email = reader.GetString(4);
                         student.GitHubLink = reader.IsDBNull(5) ? "" : reader.GetString(5);
                         student.Notes = reader.IsDBNull(6) ? "" : reader.GetString(6);
+                        if (loadAllDependencies)
+                        {
+                            student.Courses = GetStudentCourses(student.Id);
+                            student.HomeTaskAssessments = this.GetHomeTaskAssessmentsByStudentId(student.Id);
+                        }
 
-                        student.Courses = GetStudentCourses(student.Id);
-                        student.HomeTaskAssessments = this.GetHomeTaskAssessmentsByStudentId(student.Id);
                         students.Add(student);
                     }
                 }
@@ -125,9 +128,9 @@ INSERT INTO [dbo].[HomeTaskAssessment]
            ,@HomeTaskId);",
                     connection,
                     transaction);
-                sqlCommand.Parameters.Clear();
                 foreach (var homeTaskHomeTaskAssessment in homeTaskHomeTaskAssessments)
                 {
+                    sqlCommand.Parameters.Clear();
                     sqlCommand.Parameters.AddWithValue("@Date", homeTaskHomeTaskAssessment.Date);
                     sqlCommand.Parameters.AddWithValue("@IsComplete", homeTaskHomeTaskAssessment.IsComplete);
                     sqlCommand.Parameters.AddWithValue("@HomeTaskId", homeTaskHomeTaskAssessment.HomeTask.Id);
@@ -374,9 +377,9 @@ SELECT CAST(scope_identity() AS int)
             return result;
         }
 
-        public Student GetStudentById(int id)
+        public Student GetStudentById(int id, bool loadAllDependencies = true)
         {
-            var allStudents = GetAllStudents();
+            var allStudents = GetAllStudents(loadAllDependencies);
             return allStudents.SingleOrDefault(p => p.Id == id);
         }
 
@@ -418,7 +421,7 @@ SELECT CAST(scope_identity() AS int)
             return homeTask;
         }
 
-        public HomeTask GetHomeTaskById(int id)
+        public HomeTask GetHomeTaskById(int id, bool loadAllDependencies = true)
         {
             using (SqlConnection connection = GetConnection())
             {
@@ -442,8 +445,12 @@ SELECT CAST(scope_identity() AS int)
                     homeTask.Description = reader.GetString(3);
                     homeTask.Number = reader.GetInt16(4);
                     int courseId = reader.GetInt32(5);
-                    homeTask.HomeTaskAssessments = GetHomeTaskAssessmentsByHomeTaskId(homeTask.Id);
-                    homeTask.Course = GetCourse(courseId);
+                    if (loadAllDependencies)
+                    {
+                        homeTask.HomeTaskAssessments = GetHomeTaskAssessmentsByHomeTaskId(homeTask.Id);
+                        homeTask.Course = GetCourse(courseId);
+                    }
+
                     return homeTask;
                 }
             }
@@ -601,8 +608,8 @@ SELECT CAST(scope_identity() AS int)
                         homeTaskAssessment.IsComplete = reader.GetBoolean(1);
                         homeTaskAssessment.Date = reader.GetDateTime(2);
                         int studentId = reader.GetInt32(3);
-                        //homeTaskAssessment.Student = this.GetStudentById(studentId);
-                        //homeTaskAssessment.HomeTask = GetHomeTaskById(homeTaskId);
+                        homeTaskAssessment.Student = this.GetStudentById(studentId, false);
+                        homeTaskAssessment.HomeTask = GetHomeTaskById(homeTaskId, false);
                         result.Add(homeTaskAssessment);
                     }
                 }
