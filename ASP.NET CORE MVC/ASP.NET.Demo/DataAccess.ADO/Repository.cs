@@ -192,9 +192,7 @@ UPDATE [dbo].[Student]
       ,[Email] = @Email
       ,[GitHubLink] = @GitHubLink
       ,[Notes] = @Notes
- WHERE Id = @Id
-",
-                    connection);
+ WHERE Id = @Id", connection);
                 sqlCommand.Parameters.AddWithValue("@Name", student.Name);
                 sqlCommand.Parameters.AddWithValue("@Id", student.Id);
                 sqlCommand.Parameters.AddWithValue("@BirthDate", student.BirthDate);
@@ -469,7 +467,7 @@ SELECT CAST(scope_identity() AS int)
            ,[StudentId])
             VALUES
            ({courseId},{studentId})",
-                        connection);
+                        connection, transaction);
                     sqlCommand.ExecuteNonQuery();
                 }
                 transaction.Commit();
