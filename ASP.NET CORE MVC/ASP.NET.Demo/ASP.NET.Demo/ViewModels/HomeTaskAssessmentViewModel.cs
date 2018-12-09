@@ -11,8 +11,6 @@
 
         public string Description { get; set; }
 
-        public int Number { get; set; }
-
         public List<HomeTaskStudentViewModel> HomeTaskStudents { get; set; }
 
         public int HomeTaskId { get; set; }
@@ -20,12 +18,12 @@
 
     public class HomeTaskStudentViewModel
     {
-        public int Id { get; set; }
-
         public int StudentId { get; set; }
 
         public string StudentFullName { get; set; }
 
         public bool IsComplete { get; set; }
+
+        public int HomeTaskAssessmentId { get; set; }
     }
 }

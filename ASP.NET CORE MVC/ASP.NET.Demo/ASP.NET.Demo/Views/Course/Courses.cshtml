@@ -12,9 +12,6 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.StartDate)
             </th>
             <th>
@@ -24,7 +21,7 @@
                 @Html.DisplayNameFor(model => model.PassCredits)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.HomeTasks.Count)
+                Hometasks count
             </th>
             <th></th>
         </tr>
@@ -35,9 +32,6 @@
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.StartDate)
@@ -52,6 +46,7 @@
                     @Html.DisplayFor(modelItem => item.HomeTasks.Count)
                 </td>
                 <td>
+                    @Html.ActionLink("Assign Lecturers", "AssignLecturers", new { id = item.Id }) |
                     @Html.ActionLink("Assign Students", "AssignStudents", new { id = item.Id }) |
                     @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
                     @Html.ActionLink("Delete", "Delete", new { id = item.Id })

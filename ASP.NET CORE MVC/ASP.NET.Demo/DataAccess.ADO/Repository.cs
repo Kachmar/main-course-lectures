@@ -9,7 +9,7 @@
 
     using Models.Models;
 
-    public class Repository : IRepository
+    public class Repository
     {
         public string ConnectionString { get; set; }
 
@@ -18,7 +18,7 @@
             this.ConnectionString = options.Value.DefaultConnectionString;
         }
 
-        public List<Student> GetAllStudents()
+        public List<Student> GetAllStudents(bool loadAllDependencies = true)
         {
             using (SqlConnection connection = GetConnection())
             {
@@ -38,9 +38,12 @@
                         student.Email = reader.GetString(4);
                         student.GitHubLink = reader.IsDBNull(5) ? "" : reader.GetString(5);
                         student.Notes = reader.IsDBNull(6) ? "" : reader.GetString(6);
+                        if (loadAllDependencies)
+                        {
+                            student.Courses = GetStudentCourses(student.Id);
+                            student.HomeTaskAssessments = this.GetHomeTaskAssessmentsByStudentId(student.Id);
+                        }
 
-                        student.Courses = GetStudentCourses(student.Id);
-                        student.HomeTaskAssessments = this.GetHomeTaskAssessmentsByStudentId(student.Id);
                         students.Add(student);
                     }
                 }
@@ -53,7 +56,6 @@
         {
             using (SqlConnection connection = GetConnection())
             {
-                SqlTransaction transaction = connection.BeginTransaction();
                 SqlCommand sqlCommand = new SqlCommand(@"
 UPDATE [dbo].[HomeTask]
    SET [Date] = @Date
@@ -62,8 +64,7 @@ UPDATE [dbo].[HomeTask]
       ,[Title] = @Title
  WHERE Id = @Id
 ",
-                    connection,
-                    transaction);
+                    connection);
                 sqlCommand.Parameters.AddWithValue("@Date", homeTask.Date);
                 sqlCommand.Parameters.AddWithValue("@Description", homeTask.Description);
                 sqlCommand.Parameters.AddWithValue("@Number", homeTask.Number);
@@ -71,7 +72,6 @@ UPDATE [dbo].[HomeTask]
                 sqlCommand.Parameters.AddWithValue("@Id", homeTask.Id);
 
                 sqlCommand.ExecuteNonQuery();
-                transaction.Commit();
             }
         }
 
@@ -128,9 +128,9 @@ INSERT INTO [dbo].[HomeTaskAssessment]
            ,@HomeTaskId);",
                     connection,
                     transaction);
-                sqlCommand.Parameters.Clear();
                 foreach (var homeTaskHomeTaskAssessment in homeTaskHomeTaskAssessments)
                 {
+                    sqlCommand.Parameters.Clear();
                     sqlCommand.Parameters.AddWithValue("@Date", homeTaskHomeTaskAssessment.Date);
                     sqlCommand.Parameters.AddWithValue("@IsComplete", homeTaskHomeTaskAssessment.IsComplete);
                     sqlCommand.Parameters.AddWithValue("@HomeTaskId", homeTaskHomeTaskAssessment.HomeTask.Id);
@@ -141,7 +141,6 @@ INSERT INTO [dbo].[HomeTaskAssessment]
                 transaction.Commit();
             }
         }
-
 
         public List<Course> GetAllCourses()
         {
@@ -156,22 +155,7 @@ INSERT INTO [dbo].[HomeTaskAssessment]
                   ,[EndDate]
                   ,[PassCredits]
               FROM [dbo].[Course]", connection);
-
-                using (var reader = sqlCommand.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        Course course = new Course();
-                        course.Id = reader.GetInt32(0);
-                        course.Name = reader.GetString(1);
-                        course.StartDate = reader.GetDateTime(2);
-                        course.EndDate = reader.GetDateTime(3);
-                        course.PassCredits = reader.GetInt32(4);
-                        course.Students = this.GetStudentsByCourseId(course.Id);
-                        course.HomeTasks = this.GetHomeTasksByCourseId(course.Id);
-                        result.Add(course);
-                    }
-                }
+                ReadCoursesFromCommand(sqlCommand, result);
             }
 
             return result;
@@ -203,7 +187,6 @@ INSERT INTO [dbo].[HomeTaskAssessment]
         {
             using (SqlConnection connection = GetConnection())
             {
-                SqlTransaction transaction = connection.BeginTransaction();
                 SqlCommand sqlCommand = new SqlCommand(@"
 UPDATE [dbo].[Student]
    SET [Name] = @Name
@@ -212,10 +195,7 @@ UPDATE [dbo].[Student]
       ,[Email] = @Email
       ,[GitHubLink] = @GitHubLink
       ,[Notes] = @Notes
- WHERE Id = @Id
-",
-                    connection,
-                    transaction);
+ WHERE Id = @Id", connection);
                 sqlCommand.Parameters.AddWithValue("@Name", student.Name);
                 sqlCommand.Parameters.AddWithValue("@Id", student.Id);
                 sqlCommand.Parameters.AddWithValue("@BirthDate", student.BirthDate);
@@ -224,22 +204,13 @@ UPDATE [dbo].[Student]
                 AddWithNullableValue(sqlCommand.Parameters, "@GitHubLink", student.GitHubLink);
                 AddWithNullableValue(sqlCommand.Parameters, "@Notes", student.Notes);
                 sqlCommand.ExecuteNonQuery();
-
-                //       SetStudentToCourses(student.Courses.Select(p => p.Id), student.Id, transaction);
-                transaction.Commit();
             }
-        }
-
-        public void SaveChanges()
-        {
-            throw new NotImplementedException();
         }
 
         public void UpdateCourse(Course course)
         {
             using (SqlConnection connection = GetConnection())
             {
-                SqlTransaction transaction = connection.BeginTransaction();
                 SqlCommand sqlCommand = new SqlCommand(@"
 UPDATE [dbo].[Course]
    SET [Name] = @Name
@@ -248,15 +219,13 @@ UPDATE [dbo].[Course]
       ,[PassCredits] = @PassCredits
  WHERE Id = @Id
 ",
-                    connection,
-                    transaction);
+                    connection);
                 sqlCommand.Parameters.AddWithValue("@Name", course.Name);
                 sqlCommand.Parameters.AddWithValue("@StartDate", course.StartDate);
                 sqlCommand.Parameters.AddWithValue("@EndDate", course.EndDate);
                 sqlCommand.Parameters.AddWithValue("@PassCredits", course.PassCredits);
                 sqlCommand.Parameters.AddWithValue("@Id", course.Id);
                 sqlCommand.ExecuteNonQuery();
-                transaction.Commit();
             }
         }
 
@@ -286,7 +255,6 @@ UPDATE [dbo].[Course]
         {
             using (SqlConnection connection = GetConnection())
             {
-                SqlTransaction transaction = connection.BeginTransaction();
                 SqlCommand sqlCommand = new SqlCommand(@"
 INSERT INTO [dbo].[Student]
            ([Name]
@@ -304,8 +272,7 @@ INSERT INTO [dbo].[Student]
            ,@Notes);
 SELECT CAST(scope_identity() AS int)
 ",
-                    connection,
-                    transaction);
+                    connection);
                 sqlCommand.Parameters.AddWithValue("@Name", student.Name);
                 sqlCommand.Parameters.AddWithValue("@BirthDate", student.BirthDate);
                 sqlCommand.Parameters.AddWithValue("@PhoneNumber", student.PhoneNumber);
@@ -315,24 +282,19 @@ SELECT CAST(scope_identity() AS int)
                 int identity = (int)sqlCommand.ExecuteScalar();
                 if (identity == 0)
                 {
-                    transaction.Rollback();
                     return null;
                 }
 
                 student.Id = identity;
-                //   SetStudentToCourses(student.Courses.Select(p => p.Id), student.Id, transaction);
-                transaction.Commit();
             }
 
             return student;
         }
 
-
         public Course CreateCourse(Course course)
         {
             using (SqlConnection connection = GetConnection())
             {
-                SqlTransaction transaction = connection.BeginTransaction();
                 SqlCommand sqlCommand = new SqlCommand(@"
 INSERT INTO [dbo].[Course]
            ([Name]
@@ -346,8 +308,7 @@ INSERT INTO [dbo].[Course]
            ,@PassCredits);
 SELECT CAST(scope_identity() AS int)
 ",
-                    connection,
-                    transaction);
+                    connection);
                 sqlCommand.Parameters.AddWithValue("@Name", course.Name);
                 sqlCommand.Parameters.AddWithValue("@StartDate", course.StartDate);
                 sqlCommand.Parameters.AddWithValue("@EndDate", course.EndDate);
@@ -355,12 +316,10 @@ SELECT CAST(scope_identity() AS int)
                 int identity = (int)sqlCommand.ExecuteScalar();
                 if (identity == 0)
                 {
-                    transaction.Rollback();
                     return null;
                 }
 
                 course.Id = identity;
-                transaction.Commit();
             }
 
             return course;
@@ -392,15 +351,35 @@ SELECT CAST(scope_identity() AS int)
                     course.PassCredits = reader.GetInt32(4);
                     course.Students = this.GetStudentsByCourseId(course.Id);
                     course.HomeTasks = this.GetHomeTasksByCourseId(course.Id);
-
+                    course.Lecturers = this.GetLecturersByCourseId(course.Id);
                     return course;
                 }
             }
         }
 
-        public Student GetStudentById(int id)
+        private List<Lecturer> GetLecturersByCourseId(int courseId)
         {
-            var allStudents = GetAllStudents();
+            List<Lecturer> result = new List<Lecturer>();
+            using (SqlConnection connection = GetConnection())
+            {
+                SqlCommand sqlCommand = new SqlCommand(
+                    $@"
+                   SELECT l.[Id]
+                  ,[Name]
+                  ,[BirthDate]
+              FROM [dbo].[Lecturer] as l
+               JOIN [LecturerCourse] as lc
+                ON l.Id=lc.LecturerId
+                WHERE lc.CourseId={courseId}", connection);
+
+                this.ReadLecturersFromCommand(sqlCommand, result);
+            }
+            return result;
+        }
+
+        public Student GetStudentById(int id, bool loadAllDependencies = true)
+        {
+            var allStudents = GetAllStudents(loadAllDependencies);
             return allStudents.SingleOrDefault(p => p.Id == id);
         }
 
@@ -408,7 +387,6 @@ SELECT CAST(scope_identity() AS int)
         {
             using (SqlConnection connection = GetConnection())
             {
-                SqlTransaction transaction = connection.BeginTransaction();
                 SqlCommand sqlCommand = new SqlCommand(@"
 INSERT INTO [dbo].[HomeTask]
            ([Title]
@@ -424,8 +402,7 @@ INSERT INTO [dbo].[HomeTask]
            ,@CourseId);
 SELECT CAST(scope_identity() AS int)
 ",
-                    connection,
-                    transaction);
+                    connection);
                 sqlCommand.Parameters.AddWithValue("@Title", homeTask.Title);
                 sqlCommand.Parameters.AddWithValue("@Date", homeTask.Date);
                 sqlCommand.Parameters.AddWithValue("@Description", homeTask.Description);
@@ -435,18 +412,16 @@ SELECT CAST(scope_identity() AS int)
                 int identity = (int)sqlCommand.ExecuteScalar();
                 if (identity == 0)
                 {
-                    transaction.Rollback();
                     return null;
                 }
 
                 homeTask.Id = identity;
-                transaction.Commit();
             }
 
             return homeTask;
         }
 
-        public HomeTask GetHomeTaskById(int id)
+        public HomeTask GetHomeTaskById(int id, bool loadAllDependencies = true)
         {
             using (SqlConnection connection = GetConnection())
             {
@@ -470,10 +445,39 @@ SELECT CAST(scope_identity() AS int)
                     homeTask.Description = reader.GetString(3);
                     homeTask.Number = reader.GetInt16(4);
                     int courseId = reader.GetInt32(5);
-                    homeTask.HomeTaskAssessments = GetHomeTaskAssessmentsByHomeTaskId(homeTask.Id);
-                    homeTask.Course = GetCourse(courseId);
+                    if (loadAllDependencies)
+                    {
+                        homeTask.HomeTaskAssessments = GetHomeTaskAssessmentsByHomeTaskId(homeTask.Id);
+                        homeTask.Course = GetCourse(courseId);
+                    }
+
                     return homeTask;
                 }
+            }
+        }
+
+        public void SetStudentsToCourse(int courseId, IEnumerable<int> studentsId)
+        {
+            using (SqlConnection connection = GetConnection())
+            {
+                SqlTransaction transaction = connection.BeginTransaction();
+                SqlCommand sqlCommand = new SqlCommand(
+                    $@"DELETE FROM [dbo].[StudentCourse]
+            WHERE CourseId = {courseId}",
+                    connection, transaction);
+                sqlCommand.ExecuteNonQuery();
+                foreach (var studentId in studentsId)
+                {
+                    sqlCommand = new SqlCommand(
+                        $@"INSERT INTO [dbo].[StudentCourse]
+           ([CourseId]
+           ,[StudentId])
+            VALUES
+           ({courseId},{studentId})",
+                        connection, transaction);
+                    sqlCommand.ExecuteNonQuery();
+                }
+                transaction.Commit();
             }
         }
 
@@ -494,24 +498,50 @@ SELECT CAST(scope_identity() AS int)
   on c.Id=sc.CourseId
   where sc.StudentId = {studentId}", connection);
 
-                using (var reader = sqlCommand.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        Course course = new Course();
-                        course.Id = reader.GetInt32(0);
-                        course.Name = reader.GetString(1);
-                        course.StartDate = reader.GetDateTime(2);
-                        course.EndDate = reader.GetDateTime(3);
-                        course.PassCredits = reader.GetInt32(4);
-                        //course.Students = this.GetStudentsByCourseId(course.Id);
-                        //course.HomeTasks = this.GetHomeTasksByCourseId(course.Id);
-                        result.Add(course);
-                    }
-                }
+                ReadCoursesFromCommand(sqlCommand, result);
             }
 
             return result;
+        }
+
+        private List<Course> GetLecturerCourses(int lecturerId)
+        {
+            List<Course> result = new List<Course>();
+            using (SqlConnection connection = GetConnection())
+            {
+                SqlCommand sqlCommand = new SqlCommand(
+                    $@"
+                  SELECT c.[Id]
+      ,[Name]
+      ,[StartDate]
+      ,[EndDate]
+      ,[PassCredits]
+  FROM [dbo].[Course] as c
+  join LecturerCourse as lc
+  on c.Id=lc.CourseId
+  where lc.LecturerId = {lecturerId}", connection);
+
+                ReadCoursesFromCommand(sqlCommand, result);
+            }
+
+            return result;
+        }
+
+        private static void ReadCoursesFromCommand(SqlCommand sqlCommand, List<Course> result)
+        {
+            using (var reader = sqlCommand.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    Course course = new Course();
+                    course.Id = reader.GetInt32(0);
+                    course.Name = reader.GetString(1);
+                    course.StartDate = reader.GetDateTime(2);
+                    course.EndDate = reader.GetDateTime(3);
+                    course.PassCredits = reader.GetInt32(4);
+                    result.Add(course);
+                }
+            }
         }
 
         private SqlParameter AddWithNullableValue(SqlParameterCollection target, string parameterName, object value)
@@ -524,55 +554,31 @@ SELECT CAST(scope_identity() AS int)
             return target.AddWithValue(parameterName, value);
         }
 
-        public void SetStudentToCourses(IEnumerable<int> coursesId, int studentId)
-        {
-            using (SqlConnection connection = GetConnection())
-            {
-                SqlCommand sqlCommand = new SqlCommand(
-                    $@"DELETE FROM [dbo].[StudentCourse]
-            WHERE StudentId = {studentId}",
-                    connection);
-                sqlCommand.ExecuteNonQuery();
-                foreach (var courseId in coursesId)
-                {
-                    sqlCommand = new SqlCommand(
-                        $@"INSERT INTO [dbo].[StudentCourse]
-           ([CourseId]
-           ,[StudentId])
-            VALUES
-           ({courseId},{studentId})",
-                        connection);
-                    sqlCommand.ExecuteNonQuery();
-                }
-            }
-        }
-
-        public void SetStudentsToCourse(int courseId, IEnumerable<int> studentsId)
-        {
-            using (SqlConnection connection = GetConnection())
-            {
-                SqlCommand sqlCommand = new SqlCommand(
-                    $@"DELETE FROM [dbo].[StudentCourse]
-            WHERE CourseId = {courseId}",
-                    connection);
-                sqlCommand.ExecuteNonQuery();
-                foreach (var studentId in studentsId)
-                {
-                    sqlCommand = new SqlCommand(
-                        $@"INSERT INTO [dbo].[StudentCourse]
-           ([CourseId]
-           ,[StudentId])
-            VALUES
-           ({courseId},{studentId})",
-                      connection);
-                    sqlCommand.ExecuteNonQuery();
-                }
-            }
-        }
+        //public void SetStudentToCourses(IEnumerable<int> coursesId, int studentId)
+        //{
+        //    using (SqlConnection connection = GetConnection())
+        //    {
+        //        SqlCommand sqlCommand = new SqlCommand(
+        //            $@"DELETE FROM [dbo].[StudentCourse]
+        //    WHERE StudentId = {studentId}",
+        //            connection);
+        //        sqlCommand.ExecuteNonQuery();
+        //        foreach (var courseId in coursesId)
+        //        {
+        //            sqlCommand = new SqlCommand(
+        //                $@"INSERT INTO [dbo].[StudentCourse]
+        //   ([CourseId]
+        //   ,[StudentId])
+        //    VALUES
+        //   ({courseId},{studentId})",
+        //                connection);
+        //            sqlCommand.ExecuteNonQuery();
+        //        }
+        //    }
+        //}
 
         private SqlConnection GetConnection()
         {
-
             var connection = new SqlConnection(ConnectionString);
             connection.Open();
             return connection;
@@ -602,8 +608,8 @@ SELECT CAST(scope_identity() AS int)
                         homeTaskAssessment.IsComplete = reader.GetBoolean(1);
                         homeTaskAssessment.Date = reader.GetDateTime(2);
                         int studentId = reader.GetInt32(3);
-                        //homeTaskAssessment.Student = this.GetStudentById(studentId);
-                        //homeTaskAssessment.HomeTask = GetHomeTaskById(homeTaskId);
+                        homeTaskAssessment.Student = this.GetStudentById(studentId, false);
+                        homeTaskAssessment.HomeTask = GetHomeTaskById(homeTaskId, false);
                         result.Add(homeTaskAssessment);
                     }
                 }
@@ -712,8 +718,6 @@ SELECT CAST(scope_identity() AS int)
                         student.GitHubLink = reader.IsDBNull(5) ? "" : reader.GetString(5);
                         student.Notes = reader.IsDBNull(6) ? "" : reader.GetString(6);
 
-                        //student.Courses = GetStudentCourses(student.Id);
-                        //student.HomeTaskAssessments = this.GetHomeTaskAssessmentsByStudentId(student.Id);
                         result.Add(student);
                     }
 
@@ -722,5 +726,147 @@ SELECT CAST(scope_identity() AS int)
             }
         }
 
+        public void UpdateLecturer(Lecturer lecturer)
+        {
+            using (SqlConnection connection = GetConnection())
+            {
+                SqlCommand sqlCommand = new SqlCommand(@"
+UPDATE [dbo].[Lecturer]
+   SET [Name] = @Name
+      ,[BirthDate] = @BirthDate
+ WHERE Id = @Id
+",
+                    connection);
+                sqlCommand.Parameters.AddWithValue("@Name", lecturer.Name);
+                sqlCommand.Parameters.AddWithValue("@Id", lecturer.Id);
+                sqlCommand.Parameters.AddWithValue("@BirthDate", lecturer.BirthDate);
+                sqlCommand.ExecuteNonQuery();
+            }
+        }
+
+        public void DeleteLecturer(int id)
+        {
+            using (SqlConnection connection = GetConnection())
+            {
+                SqlCommand sqlCommand = new SqlCommand(
+                    $@"DELETE FROM [dbo].[Lecturer]
+                WHERE Id={id}",
+                    connection);
+                sqlCommand.ExecuteNonQuery();
+            }
+        }
+
+        public Lecturer GetLecturerById(int id)
+        {
+            using (SqlConnection connection = GetConnection())
+            {
+                SqlCommand sqlCommand = new SqlCommand(
+                    $@"
+                   SELECT [Id]
+                  ,[Name]
+                  ,[BirthDate]
+              FROM [dbo].[Lecturer]
+              WHERE [ID] = {id}", connection);
+
+                using (var reader = sqlCommand.ExecuteReader())
+                {
+                    reader.Read();
+
+                    Lecturer lecturer = new Lecturer();
+                    lecturer.Id = reader.GetInt32(0);
+                    lecturer.Name = reader.GetString(1);
+                    lecturer.BirthDate = reader.GetDateTime(2);
+                    lecturer.Courses = this.GetLecturerCourses(lecturer.Id);
+
+                    return lecturer;
+                }
+            }
+        }
+
+        public List<Lecturer> GetAllLecturers()
+        {
+            List<Lecturer> result = new List<Lecturer>();
+            using (SqlConnection connection = GetConnection())
+            {
+                SqlCommand sqlCommand = new SqlCommand(
+                    $@"
+                   SELECT [Id]
+                  ,[Name]
+                  ,[BirthDate]
+              FROM [dbo].[Lecturer]", connection);
+
+                this.ReadLecturersFromCommand(sqlCommand, result);
+            }
+            return result;
+        }
+
+        private void ReadLecturersFromCommand(SqlCommand sqlCommand, List<Lecturer> result)
+        {
+            using (var reader = sqlCommand.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    Lecturer lecturer = new Lecturer();
+                    lecturer.Id = reader.GetInt32(0);
+                    lecturer.Name = reader.GetString(1);
+                    lecturer.BirthDate = reader.GetDateTime(2);
+                    lecturer.Courses = this.GetLecturerCourses(lecturer.Id);
+                    result.Add(lecturer);
+                }
+            }
+        }
+
+        public Lecturer CreateLecturer(Lecturer lecturer)
+        {
+            using (SqlConnection connection = GetConnection())
+            {
+                SqlCommand sqlCommand = new SqlCommand(@"
+INSERT INTO [dbo].[Lecturer]
+           ([Name]
+           ,[BirthDate])
+     VALUES
+           (@Name
+           ,@BirthDate);
+SELECT CAST(scope_identity() AS int)
+",
+                    connection);
+                sqlCommand.Parameters.AddWithValue("@Name", lecturer.Name);
+                sqlCommand.Parameters.AddWithValue("@BirthDate", lecturer.BirthDate);
+                int identity = (int)sqlCommand.ExecuteScalar();
+                if (identity == 0)
+                {
+                    return null;
+                }
+
+                lecturer.Id = identity;
+            }
+
+            return lecturer;
+        }
+
+        public void SetLecturersToCourse(int courseId, IEnumerable<int> lecturerIds)
+        {
+            using (SqlConnection connection = GetConnection())
+            {
+                SqlTransaction transaction = connection.BeginTransaction();
+                SqlCommand sqlCommand = new SqlCommand(
+                    $@"DELETE FROM [dbo].[LecturerCourse]
+            WHERE CourseId = {courseId}",
+                    connection, transaction);
+                sqlCommand.ExecuteNonQuery();
+                foreach (var lecturerId in lecturerIds)
+                {
+                    sqlCommand = new SqlCommand(
+                        $@"INSERT INTO [dbo].[LecturerCourse]
+           ([CourseId]
+           ,[LecturerId])
+            VALUES
+           ({courseId},{lecturerId})",
+                        connection, transaction);
+                    sqlCommand.ExecuteNonQuery();
+                }
+                transaction.Commit();
+            }
+        }
     }
 }
