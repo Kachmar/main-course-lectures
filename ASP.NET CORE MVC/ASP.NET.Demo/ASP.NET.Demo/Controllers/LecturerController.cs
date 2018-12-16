@@ -5,26 +5,27 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Models.Models;
+    using Services;
 
     public class LecturerController : Controller
     {
-        private readonly Repository repository;
+        private readonly LecturerService lecturerService;
 
-        public LecturerController(Repository repository)
+        public LecturerController(LecturerService lecturerService)
         {
-            this.repository = repository;
+            this.lecturerService = lecturerService;
         }
 
         // GET
         public IActionResult Lecturers()
         {
-            return View(repository.GetAllLecturers());
+            return View(lecturerService.GetAllLecturers());
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            Lecturer lecturer = repository.GetLecturerById(id);
+            Lecturer lecturer = lecturerService.GetLecturerById(id);
             ViewData["Action"] = "Edit";
             return this.View(lecturer);
         }
@@ -37,7 +38,7 @@
                 ViewData["Action"] = "Edit";
                 return this.View("Edit", model);
             }
-            this.repository.UpdateLecturer(model);
+            this.lecturerService.UpdateLecturer(model);
 
             return RedirectToAction("Lecturers");
         }
@@ -45,7 +46,7 @@
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            this.repository.DeleteLecturer(id);
+            this.lecturerService.DeleteLecturer(id);
             return RedirectToAction("Lecturers");
         }
 
@@ -67,7 +68,7 @@
                 return this.View("Edit", model);
             }
 
-            this.repository.CreateLecturer(model);
+            this.lecturerService.CreateLecturer(model);
             return RedirectToAction("Lecturers");
         }
     }

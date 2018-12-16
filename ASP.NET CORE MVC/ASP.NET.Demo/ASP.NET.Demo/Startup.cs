@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using DataAccess.ADO;
+using Services;
+using DataAccess.EF;
 
 namespace ASP.NET.Demo
 {
@@ -24,7 +26,12 @@ namespace ASP.NET.Demo
         {
             services.AddMvc();
             services.Configure<RepositoryOptions>(Configuration);
-            services.AddScoped<Repository, Repository>();
+            services.AddScoped<StudentService>();
+            services.AddScoped<CourseService>();
+            services.AddScoped<HomeTaskService>();
+            services.AddScoped<LecturerService>();
+            services.AddDbContext<UniversityContext>();
+            services.AddScoped(typeof(UniversityRepository<>));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,7 +48,7 @@ namespace ASP.NET.Demo
             }
 
             app.UseStaticFiles();
-
+            //app.UseAuthentication();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

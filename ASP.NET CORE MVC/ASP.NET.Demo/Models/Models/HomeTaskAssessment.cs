@@ -10,8 +10,8 @@
 
         public DateTime Date { get; set; }
 
-        public HomeTask HomeTask { get; set; }
+        public virtual HomeTask HomeTask { get; set; }
 
-        public Student Student { get; set; }
+        public virtual Student Student { get; set; }
     }
 }

@@ -11,6 +11,6 @@
 
         public DateTime BirthDate { get; set; }
 
-        public List<Course> Courses { get; set; }
+        public virtual List<LecturerCourse> Courses { get; set; }
     }
 }

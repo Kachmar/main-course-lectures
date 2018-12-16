@@ -4,15 +4,17 @@
     using System.Linq;
 
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Options;
 
     public class UniversityRepository<T> where T : class
     {
-        UniversityContext context = new UniversityContext(null);
-
+        private readonly UniversityContext context;
         protected DbSet<T> DBSet;
 
-        public UniversityRepository()
+        public UniversityRepository(UniversityContext context)
         {
+            this.context = context;
+            context.Database.EnsureCreated();
             this.DBSet = this.context.Set<T>();
         }
 
@@ -26,24 +28,29 @@
             return this.DBSet.Find(id);
         }
 
-        public void Create(T entity)
+        public T Create(T entity)
         {
             var result = this.DBSet.Add(entity);
+            context.SaveChanges();
+            return entity;
         }
 
         public void Update(T entity)
         {
             this.DBSet.Update(entity);
+            context.SaveChanges();
         }
 
         public void Remove(T entity)
         {
             this.DBSet.Remove(entity);
+            context.SaveChanges();
         }
 
-        public void SaveChanges()
+        public void Remove(int id)
         {
-            this.context.SaveChanges();
+            var entity = this.GetById(id);
+            Remove(entity);
         }
     }
 }

@@ -9,14 +9,15 @@ namespace ASP.NET.Demo.Controllers
     using DataAccess.ADO;
 
     using Models.Models;
+    using Services;
 
     public class StudentController : Controller
     {
-        private readonly Repository repository;
+        private readonly StudentService studentService;
 
-        public StudentController(Repository repository)
+        public StudentController(StudentService studentService)
         {
-            this.repository = repository;
+            this.studentService = studentService;
         }
 
         // GET
@@ -24,13 +25,13 @@ namespace ASP.NET.Demo.Controllers
         {
 
 
-            return View(repository.GetAllStudents());
+            return View(studentService.GetAllStudents());
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var student = repository.GetStudentById(id);
+            var student = studentService.GetStudentById(id);
             ViewData["Action"] = "Edit";
             return this.View(student);
         }
@@ -43,7 +44,7 @@ namespace ASP.NET.Demo.Controllers
                 ViewData["Action"] = "Edit";
                 return this.View("Edit", model);
             }
-            this.repository.UpdateStudent(model);
+            this.studentService.UpdateStudent(model);
 
             return RedirectToAction("Students");
         }
@@ -51,7 +52,7 @@ namespace ASP.NET.Demo.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            this.repository.DeleteStudent(id);
+            this.studentService.DeleteStudent(id);
             return RedirectToAction("Students");
         }
 
@@ -73,7 +74,7 @@ namespace ASP.NET.Demo.Controllers
                 return this.View("Edit", model);
             }
 
-            this.repository.CreateStudent(model);
+            this.studentService.CreateStudent(model);
             return RedirectToAction("Students");
 
         }

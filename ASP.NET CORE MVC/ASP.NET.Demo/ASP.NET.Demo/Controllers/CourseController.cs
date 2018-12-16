@@ -8,28 +8,31 @@ namespace ASP.NET.Demo.Controllers
 
     using ASP.NET.Demo.ViewModels;
 
-    using DataAccess.ADO;
-
     using Models.Models;
+    using Services;
 
     public class CourseController : Controller
     {
-        private readonly Repository repository;
+        private readonly CourseService courseService;
+        private readonly StudentService studentService;
+        private readonly LecturerService lecturerService;
 
-        public CourseController(Repository repository)
+        public CourseController(CourseService courseService, StudentService studentService, LecturerService lecturerService)
         {
-            this.repository = repository;
+            this.courseService = courseService;
+            this.studentService = studentService;
+            this.lecturerService = lecturerService;
         }
 
         // GET
         public IActionResult Courses()
         {
-            return View(this.repository.GetAllCourses());
+            return View(this.courseService.GetAllCourses());
         }
 
         public IActionResult Delete(int id)
         {
-            this.repository.DeleteCourse(id);
+            this.courseService.DeleteCourse(id);
 
             return RedirectToAction("Courses");
         }
@@ -43,7 +46,7 @@ namespace ASP.NET.Demo.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            Course course = this.repository.GetCourse(id);
+            Course course = this.courseService.GetCourse(id);
             if (course == null)
             {
                 return this.NotFound();
@@ -61,7 +64,7 @@ namespace ASP.NET.Demo.Controllers
             {
                 return this.BadRequest();
             }
-            repository.UpdateCourse(courseParameter);
+            courseService.UpdateCourse(courseParameter);
             return this.RedirectToAction(nameof(Courses));
         }
 
@@ -79,15 +82,15 @@ namespace ASP.NET.Demo.Controllers
 
                 return this.View("Edit", courseParameter);
             }
-            this.repository.CreateCourse(courseParameter);
+            this.courseService.CreateCourse(courseParameter);
             return this.RedirectToAction(nameof(Courses));
         }
 
         [HttpGet]
         public IActionResult AssignStudents(int id)
         {
-            var allStudents = this.repository.GetAllStudents();
-            var course = this.repository.GetCourse(id);
+            var allStudents = this.studentService.GetAllStudents();
+            var course = this.courseService.GetCourse(id);
             CourseStudentAssignmentViewModel model = new CourseStudentAssignmentViewModel();
 
             model.Id = id;
@@ -99,7 +102,7 @@ namespace ASP.NET.Demo.Controllers
 
             foreach (var student in allStudents)
             {
-                bool isAssigned = course.Students.Any(p => p.Id == student.Id);
+                bool isAssigned = course.Students.Any(p => p.StudentId == student.Id);
                 model.Students.Add(new StudentViewModel() { StudentId = student.Id, StudentFullName = student.Name, IsAssigned = isAssigned });
             }
 
@@ -109,7 +112,7 @@ namespace ASP.NET.Demo.Controllers
         [HttpPost]
         public IActionResult AssignStudents(CourseStudentAssignmentViewModel assignmentViewModel)
         {
-            this.repository.SetStudentsToCourse(assignmentViewModel.Id, assignmentViewModel.Students.Where(p => p.IsAssigned).Select(student => student.StudentId));
+            this.courseService.SetStudentsToCourse(assignmentViewModel.Id, assignmentViewModel.Students.Where(p => p.IsAssigned).Select(student => student.StudentId));
 
             return RedirectToAction("Courses");
         }
@@ -117,8 +120,8 @@ namespace ASP.NET.Demo.Controllers
         [HttpGet]
         public IActionResult AssignLecturers(int id)
         {
-            var allLecturers = this.repository.GetAllLecturers();
-            var course = this.repository.GetCourse(id);
+            var allLecturers = this.lecturerService.GetAllLecturers();
+            var course = this.courseService.GetCourse(id);
             CourseLecturerAssignmentViewModel model = new CourseLecturerAssignmentViewModel();
 
             model.Id = id;
@@ -130,7 +133,7 @@ namespace ASP.NET.Demo.Controllers
 
             foreach (var lecturer in allLecturers)
             {
-                bool isAssigned = course.Lecturers.Any(p => p.Id == lecturer.Id);
+                bool isAssigned = course.Lecturers.Any(p => p.LecturerId == lecturer.Id);
                 model.Lecturers.Add(new LecturersViewModel() { LecturerId = lecturer.Id, Name = lecturer.Name, IsAssigned = isAssigned });
             }
 
@@ -140,7 +143,7 @@ namespace ASP.NET.Demo.Controllers
         [HttpPost]
         public IActionResult AssignLecturers(CourseLecturerAssignmentViewModel model)
         {
-            this.repository.SetLecturersToCourse(model.Id, model.Lecturers.Where(p => p.IsAssigned).Select(lecturer => lecturer.LecturerId));
+            this.courseService.SetLecturersToCourse(model.Id, model.Lecturers.Where(p => p.IsAssigned).Select(lecturer => lecturer.LecturerId));
 
             return RedirectToAction("Courses");
 

@@ -12,8 +12,6 @@
 
         public int Id { get; set; }
 
-        public List<Course> Courses { get; set; }
-
         [Display(Name = "Birth date")]
         [DataType(DataType.Date)]
         [Range(typeof(DateTime), "1/2/1004", "3/4/3004",
@@ -33,6 +31,9 @@
 
         public string Notes { get; set; }
 
-        public List<HomeTaskAssessment> HomeTaskAssessments { get; set; }
+        public virtual List<HomeTaskAssessment> HomeTaskAssessments { get; set; }
+
+        public virtual List<StudentCourse> Courses { get; set; }
+
     }
 }

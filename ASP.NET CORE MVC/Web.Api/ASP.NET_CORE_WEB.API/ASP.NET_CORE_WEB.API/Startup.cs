@@ -44,7 +44,7 @@ namespace ASP.NET_CORE_WEB.API
             //Simply using its name and method name prefix/CustomWithoutBaseClass/Abracadabra
             app.UseMvc(
                 builder =>
-                    {
+                    {builder.
                         //this route (error/x/y) will return error, cause we are using default MVCRouteHandler,
                         //and it expects the Controller and action name among RouteValues.
                         //builder.MapRoute("errorous", "error/{x}/{y}");

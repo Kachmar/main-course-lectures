@@ -27,10 +27,10 @@
         [Range(1, 100)]
         public int PassCredits { get; set; }
 
-        public List<HomeTask> HomeTasks { get; set; }
+        public virtual List<HomeTask> HomeTasks { get; set; }
 
-        public List<Lecturer> Lecturers { get; set; }
+        public virtual List<LecturerCourse> Lecturers { get; set; }
 
-        public List<Student> Students { get; set; }
+        public virtual List<StudentCourse> Students { get; set; }
     }
 }
