@@ -16,11 +16,8 @@
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            //TODO Fix options is null
             optionsBuilder.UseSqlServer(options.Value.DefaultConnectionString);
             optionsBuilder.UseLazyLoadingProxies();
-            //optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=AspDemo;Trusted_Connection=True;");
-
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -2,6 +2,7 @@
 {
     using DataAccess.ADO;
 
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
     using Models.Models;
@@ -23,6 +24,7 @@
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int id)
         {
             Lecturer lecturer = lecturerService.GetLecturerById(id);
@@ -31,6 +33,7 @@
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(Lecturer model)
         {
             if (!ModelState.IsValid)
@@ -44,6 +47,7 @@
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             this.lecturerService.DeleteLecturer(id);
@@ -51,6 +55,7 @@
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["Action"] = "Create";
@@ -60,6 +65,7 @@
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create(Lecturer model)
         {
             if (!ModelState.IsValid)

@@ -12,6 +12,9 @@ using DataAccess.EF;
 
 namespace ASP.NET.Demo
 {
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore;
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -21,10 +24,14 @@ namespace ASP.NET.Demo
 
         public IConfiguration Configuration { get; }
 
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase());
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
             services.Configure<RepositoryOptions>(Configuration);
             services.AddScoped<StudentService>();
             services.AddScoped<CourseService>();
@@ -32,10 +39,15 @@ namespace ASP.NET.Demo
             services.AddScoped<LecturerService>();
             services.AddDbContext<UniversityContext>();
             services.AddScoped(typeof(UniversityRepository<>));
+            services.ConfigureApplicationCookie(p =>
+                {
+                    p.LoginPath = "/Security/Login";
+                    p.Cookie.Name = "ASP.NET.Demo.App";
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context)
         {
             if (env.IsDevelopment())
             {
@@ -48,13 +60,24 @@ namespace ASP.NET.Demo
             }
 
             app.UseStaticFiles();
-            //app.UseAuthentication();
+            app.UseAuthentication();
+            this.CreateAdminUser(userManager, roleManager);
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Course}/{action=Courses}/{id?}");
             });
+        }
+
+        private void CreateAdminUser(
+            UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager)
+        {
+            IdentityUser identityUser = new IdentityUser("Admin@test.com") { Email = "Admin@test.com" };
+            var userRes = userManager.CreateAsync(identityUser, "Qwerty1234!");
+            var rol = roleManager.CreateAsync(new IdentityRole("Admin"));
+            var res = userManager.AddToRoleAsync(identityUser, "Admin");
         }
     }
 }

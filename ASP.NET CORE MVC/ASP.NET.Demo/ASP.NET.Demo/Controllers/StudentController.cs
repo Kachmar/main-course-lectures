@@ -8,6 +8,8 @@ namespace ASP.NET.Demo.Controllers
 
     using DataAccess.ADO;
 
+    using Microsoft.AspNetCore.Authorization;
+
     using Models.Models;
     using Services;
 
@@ -23,12 +25,11 @@ namespace ASP.NET.Demo.Controllers
         // GET
         public IActionResult Students()
         {
-
-
             return View(studentService.GetAllStudents());
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int id)
         {
             var student = studentService.GetStudentById(id);
@@ -37,6 +38,7 @@ namespace ASP.NET.Demo.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(Student model)
         {
             if (!ModelState.IsValid)
@@ -50,12 +52,14 @@ namespace ASP.NET.Demo.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             this.studentService.DeleteStudent(id);
             return RedirectToAction("Students");
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Create()
         {
@@ -64,8 +68,8 @@ namespace ASP.NET.Demo.Controllers
             return this.View("Edit", student);
         }
 
-
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create(Student model)
         {
             if (!ModelState.IsValid)

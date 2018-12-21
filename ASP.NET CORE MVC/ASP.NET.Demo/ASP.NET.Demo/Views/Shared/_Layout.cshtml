@@ -30,12 +30,27 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    
+
                     <li><a asp-controller="Course" asp-action="Courses">Courses</a></li>
                     <li><a asp-controller="Student" asp-action="Students">Students</a></li>
                     <li><a asp-controller="Lecturer" asp-action="Lecturers">Lecturers</a></li>
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        <li><a asp-controller="Security" asp-action="Login">Login</a></li>
+                    }
+                    else
+                    {
 
-                    </ul>
+                        <li><a asp-controller="Security" asp-action="Logout">Logout</a></li>
+                        if (User.IsInRole("Admin"))
+                        {
+                            <li><a asp-controller="Security" asp-action="CreateUser">CreateUser</a></li>
+                            <li><a asp-controller="Security" asp-action="Users">AssignUserRole</a></li>
+                            <li><a asp-controller="Security" asp-action="CreateRole">CreateRole</a></li>
+                        }
+                        <li><p>Hello, @User.Identity.Name</p></li>
+                    }
+                </ul>
             </div>
         </div>
     </nav>

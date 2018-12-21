@@ -5,8 +5,11 @@ namespace ASP.NET.Demo.Controllers
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
 
     using ASP.NET.Demo.ViewModels;
+
+    using Microsoft.AspNetCore.Authorization;
 
     using Models.Models;
     using Services;
@@ -30,6 +33,7 @@ namespace ASP.NET.Demo.Controllers
             return View(this.courseService.GetAllCourses());
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             this.courseService.DeleteCourse(id);
@@ -37,6 +41,7 @@ namespace ASP.NET.Demo.Controllers
             return RedirectToAction("Courses");
         }
 
+        //[Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["action"] = nameof(this.Create);
@@ -44,6 +49,7 @@ namespace ASP.NET.Demo.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int id)
         {
             Course course = this.courseService.GetCourse(id);
@@ -58,6 +64,7 @@ namespace ASP.NET.Demo.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(Course courseParameter)
         {
             if (courseParameter == null)
@@ -68,6 +75,7 @@ namespace ASP.NET.Demo.Controllers
             return this.RedirectToAction(nameof(Courses));
         }
 
+        //[Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Create(Course courseParameter)
         {
@@ -86,6 +94,7 @@ namespace ASP.NET.Demo.Controllers
             return this.RedirectToAction(nameof(Courses));
         }
 
+        [Authorize(Roles = "Admin,Lecturer")]
         [HttpGet]
         public IActionResult AssignStudents(int id)
         {
@@ -109,6 +118,7 @@ namespace ASP.NET.Demo.Controllers
             return this.View(model);
         }
 
+        [Authorize(Roles = "Admin,Lecturer")]
         [HttpPost]
         public IActionResult AssignStudents(CourseStudentAssignmentViewModel assignmentViewModel)
         {
@@ -118,6 +128,7 @@ namespace ASP.NET.Demo.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Lecturer")]
         public IActionResult AssignLecturers(int id)
         {
             var allLecturers = this.lecturerService.GetAllLecturers();
@@ -141,6 +152,7 @@ namespace ASP.NET.Demo.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Lecturer")]
         public IActionResult AssignLecturers(CourseLecturerAssignmentViewModel model)
         {
             this.courseService.SetLecturersToCourse(model.Id, model.Lecturers.Where(p => p.IsAssigned).Select(lecturer => lecturer.LecturerId));

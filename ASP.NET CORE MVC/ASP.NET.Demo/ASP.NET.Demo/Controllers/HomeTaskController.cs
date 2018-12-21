@@ -9,6 +9,7 @@ namespace ASP.NET.Demo.Controllers
 
     using DataAccess.ADO;
 
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Routing;
 
     using Models.Models;
@@ -26,6 +27,7 @@ namespace ASP.NET.Demo.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Lecturer")]
         public IActionResult Create(int courseId)
         {
             ViewData["Action"] = "Create";
@@ -35,6 +37,7 @@ namespace ASP.NET.Demo.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Lecturer")]
         public IActionResult Create(HomeTask homeTask, int courseId)
         {
             if (!ModelState.IsValid)
@@ -51,6 +54,7 @@ namespace ASP.NET.Demo.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Lecturer")]
         public IActionResult Edit(int id)
         {
             HomeTask homeTask = this.homeTaskService.GetHomeTaskById(id);
@@ -62,6 +66,7 @@ namespace ASP.NET.Demo.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Lecturer")]
         public IActionResult Edit(HomeTask homeTaskParameter)
         {
             if (!ModelState.IsValid)
@@ -80,6 +85,7 @@ namespace ASP.NET.Demo.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Lecturer")]
         public IActionResult Delete(int homeTaskId, int courseId)
         {
             this.homeTaskService.DeleteHomeTask(homeTaskId);
@@ -90,6 +96,7 @@ namespace ASP.NET.Demo.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Lecturer")]
         public IActionResult Evaluate(int id)
         {
             var homeTask = this.homeTaskService.GetHomeTaskById(id);
@@ -135,6 +142,7 @@ namespace ASP.NET.Demo.Controllers
             return this.View(assessmentViewModel);
         }
 
+        [Authorize(Roles = "Admin,Lecturer")]
         public IActionResult SaveEvaluation(HomeTaskAssessmentViewModel model)
         {
             var homeTask = this.homeTaskService.GetHomeTaskById(model.HomeTaskId);
