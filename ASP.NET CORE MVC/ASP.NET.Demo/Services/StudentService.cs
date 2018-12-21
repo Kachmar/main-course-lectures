@@ -9,31 +9,36 @@ namespace Services
     {
         private readonly UniversityRepository<Student> studentRepository;
 
+        public StudentService()
+        {
+        }
+
         public StudentService(UniversityRepository<Student> studentRepository)
         {
             this.studentRepository = studentRepository;
         }
-        public List<Student> GetAllStudents()
+
+        public virtual List<Student> GetAllStudents()
         {
             return this.studentRepository.GetAll();
         }
 
-        public Student GetStudentById(int studentId)
+        public virtual Student GetStudentById(int studentId)
         {
             return this.studentRepository.GetById(studentId);
         }
 
-        public void UpdateStudent(Student student)
+        public virtual void UpdateStudent(Student student)
         {
             this.studentRepository.Update(student);
         }
 
-        public void DeleteStudent(int id)
+        public virtual void DeleteStudent(int id)
         {
             this.studentRepository.Remove(id);
         }
 
-        public void CreateStudent(Student student)
+        public virtual void CreateStudent(Student student)
         {
             this.studentRepository.Create(student);
         }

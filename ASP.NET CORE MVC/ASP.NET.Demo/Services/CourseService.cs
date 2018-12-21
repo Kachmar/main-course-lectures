@@ -11,6 +11,10 @@ namespace Services
         private readonly UniversityRepository<Course> courseRepository;
         private readonly UniversityRepository<Student> studentRepository;
 
+        public CourseService()
+        {
+        }
+
         public CourseService(UniversityRepository<Lecturer> lecturerRepository, UniversityRepository<Course> courseRepository, UniversityRepository<Student> studentRepository)
         {
             this.lecturerRepository = lecturerRepository;
@@ -18,32 +22,32 @@ namespace Services
             this.studentRepository = studentRepository;
         }
 
-        public List<Course> GetAllCourses()
+        public virtual List<Course> GetAllCourses()
         {
             return courseRepository.GetAll();
         }
 
-        public void DeleteCourse(int id)
+        public virtual void DeleteCourse(int id)
         {
             this.courseRepository.Remove(id);
         }
 
-        public Course GetCourse(int id)
+        public virtual Course GetCourse(int id)
         {
             return this.courseRepository.GetById(id);
         }
 
-        public void UpdateCourse(Course course)
+        public virtual void UpdateCourse(Course course)
         {
             this.courseRepository.Update(course);
         }
 
-        public void CreateCourse(Course course)
+        public virtual void CreateCourse(Course course)
         {
             this.courseRepository.Create(course);
         }
 
-        public void SetStudentsToCourse(int courseId, IEnumerable<int> studentIds)
+        public virtual void SetStudentsToCourse(int courseId, IEnumerable<int> studentIds)
         {
             var course = this.courseRepository.GetById(courseId);
             course.Students.Clear();
@@ -55,7 +59,7 @@ namespace Services
             this.courseRepository.Update(course);
         }
 
-        public void SetLecturersToCourse(int courseId, IEnumerable<int> lecturerIds)
+        public virtual void SetLecturersToCourse(int courseId, IEnumerable<int> lecturerIds)
         {
             var course = this.courseRepository.GetById(courseId);
             course.Lecturers.Clear();

@@ -41,7 +41,7 @@ namespace ASP.NET.Demo.Controllers
             return RedirectToAction("Courses");
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["action"] = nameof(this.Create);
@@ -75,7 +75,7 @@ namespace ASP.NET.Demo.Controllers
             return this.RedirectToAction(nameof(Courses));
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Create(Course courseParameter)
         {
@@ -158,7 +158,6 @@ namespace ASP.NET.Demo.Controllers
             this.courseService.SetLecturersToCourse(model.Id, model.Lecturers.Where(p => p.IsAssigned).Select(lecturer => lecturer.LecturerId));
 
             return RedirectToAction("Courses");
-
         }
     }
 }
