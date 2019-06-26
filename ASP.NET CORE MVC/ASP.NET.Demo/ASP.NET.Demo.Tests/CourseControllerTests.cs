@@ -5,9 +5,7 @@
 
     using ASP.NET.Demo.Controllers;
     using ASP.NET.Demo.ViewModels;
-
-    using DeepEqual.Syntax;
-
+    using FluentAssertions;
     using Microsoft.AspNetCore.Mvc;
 
     using Models.Models;
@@ -98,7 +96,7 @@
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var actualModel = Assert.IsAssignableFrom<CourseStudentAssignmentViewModel>(viewResult.ViewData.Model);
-            actualModel.WithDeepEqual(expectedModel).Assert();
+            actualModel.Should().BeEquivalentTo(expectedModel);
         }
 
         [Fact]
