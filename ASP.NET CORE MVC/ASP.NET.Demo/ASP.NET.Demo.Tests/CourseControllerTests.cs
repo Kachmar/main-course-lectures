@@ -100,6 +100,24 @@
         }
 
         [Fact]
+        public async Task Create_ReturnsBadRequest_WhenCourseParameterIsNull()
+        {
+
+        }
+
+        [Fact]
+        public async Task Create_ReturnsViewResult_WhenModelStateIsInvalid()
+        {
+
+        }
+
+        [Fact]
+        public async Task Create_RedirectsToCoursesAndCreatesCourses_WhenRequestIsValid()
+        {
+
+        }
+
+        [Fact]
         public async Task AssignStudents_ReturnsBadRequest_WhenNonExistingCourseId()
         {
 
