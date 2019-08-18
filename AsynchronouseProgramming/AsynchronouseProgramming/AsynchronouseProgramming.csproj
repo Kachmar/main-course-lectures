@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -6,18 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="LocalVariablesWithinThreads.cs" />
-    <Compile Remove="Program.cs" />
-    <Compile Remove="SimpleThread.cs" />
-    <Compile Remove="LambdaExpressionAndCapturedVars.cs" />
-    <Compile Remove="StaticsInMultiThreading.cs" />
+    <Compile Remove="BackgroundThreads.cs" />
     <Compile Remove="ExceptionHandling.cs" />
-    <Compile Remove="BackgroundThreads.cs" />
+    <Compile Remove="LocalVariablesWithinThreads.cs" />
     <Compile Remove="ManualResetEvent.cs" />
-    <Compile Remove="TaskRunAndWait.cs" />
-    <Compile Remove="BackgroundThreads.cs" />
+    <Compile Remove="Program.cs" />
+    <Compile Remove="LambdaExpressionAndCapturedVars.cs" />
+    <Compile Remove="SimpleThread.cs" />
+    <Compile Remove="StaticsInMultiThreading.cs" />
     <Compile Remove="TaskRunAndWait.cs" />
     <Compile Remove="TaskWithReturnValue.cs" />
     <Compile Remove="AsyncAwait.cs" />
+    <Compile Remove="WhenAllWhenAny.cs" />
   </ItemGroup>
 </Project>
