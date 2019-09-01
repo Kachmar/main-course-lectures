@@ -8,9 +8,9 @@ namespace AsynchronouseProgramming
         bool _done;
         static void Main()
         {
-            LocalVariablesWithinThreads tt = new LocalVariablesWithinThreads();
-            new Thread(tt.Go).Start();
-            tt.Go();
+            LocalVariablesWithinThreads localVariablesWithinThreads = new LocalVariablesWithinThreads();
+            new Thread(localVariablesWithinThreads.Go).Start();
+            localVariablesWithinThreads.Go();
         }
 
         // Create a common instance

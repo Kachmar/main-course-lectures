@@ -6,6 +6,7 @@ namespace AsynchronouseProgramming
     public class StaticsInMultiThreading
     {
         static bool _done;
+        static object _locker = new object();
         static void Main()
         {
             // Static fields are shared between all threads
@@ -21,10 +22,15 @@ namespace AsynchronouseProgramming
         }
         static void Go()
         {
-            if (!_done)
+            lock (_locker)
             {
-                Console.WriteLine("Done");
-                _done = true; }
+                if (!_done)
+                {
+                    Console.WriteLine($"{Thread.GetCurrentProcessorId()} Done");
+
+                    _done = true;
+                }
+            }
         }
     }
 
@@ -38,7 +44,7 @@ namespace AsynchronouseProgramming
     //        // Static fields are shared between all threads
     //        // in the same application domain.
     //        new Thread(Go).Start();
-           
+
     //        Go();
     //    }
     //    static void Go()

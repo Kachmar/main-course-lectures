@@ -6,14 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="BackgroundThreads.cs" />
     <Compile Remove="ExceptionHandling.cs" />
+    <Compile Remove="LambdaExpressionAndCapturedVars.cs" />
     <Compile Remove="LocalVariablesWithinThreads.cs" />
     <Compile Remove="ManualResetEvent.cs" />
     <Compile Remove="Program.cs" />
-    <Compile Remove="LambdaExpressionAndCapturedVars.cs" />
     <Compile Remove="SimpleThread.cs" />
     <Compile Remove="StaticsInMultiThreading.cs" />
+    <Compile Remove="TaskCancellation.cs" />
     <Compile Remove="TaskRunAndWait.cs" />
     <Compile Remove="TaskWithReturnValue.cs" />
     <Compile Remove="AsyncAwait.cs" />
