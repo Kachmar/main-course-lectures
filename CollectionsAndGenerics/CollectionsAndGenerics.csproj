@@ -42,8 +42,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GoodsCollection.cs" />
+    <Compile Include="IHuman.cs" />
+    <Compile Include="MyFirstCourseCollection.cs" />
+    <Compile Include="MyGenericClass.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Pupil.cs" />
+    <Compile Include="Student.cs" />
+    <Compile Include="YieldDemo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
