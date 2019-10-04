@@ -7,16 +7,16 @@ namespace AsynchronouseProgramming
 {
     public class AsyncAwait
     {
-        static void Main()
+        static async Task Main()
         {
-            var content = GetContentAsync().Result;
+            var content = await GetContentAsync();
             Console.WriteLine(content);
         }
 
         private static async Task<string> GetContentAsync()
         {
             HttpClient httpClient = new HttpClient();
-            var content = await httpClient.GetStringAsync("http://google.com");
+            string content = await httpClient.GetStringAsync("http://google.com");
             return content;
         }
 

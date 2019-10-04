@@ -6,17 +6,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="AsyncAwait_12.cs" />
+    <Compile Remove="BackgroundThreads_6.cs" />
     <Compile Remove="ExceptionHandling.cs" />
+    <Compile Remove="ExceptionHandling_8.cs" />
     <Compile Remove="LambdaExpressionAndCapturedVars.cs" />
-    <Compile Remove="LocalVariablesWithinThreads.cs" />
+    <Compile Remove="LambdaExpressionAndCapturedVars_5.cs" />
+    <Compile Remove="LocalVariablesWithinThreads_4.cs" />
     <Compile Remove="ManualResetEvent.cs" />
+    <Compile Remove="ManualResetEvent_2.cs" />
     <Compile Remove="Program.cs" />
     <Compile Remove="SimpleThread.cs" />
+    <Compile Remove="SimpleThread_1.cs" />
     <Compile Remove="StaticsInMultiThreading.cs" />
+    <Compile Remove="StaticsInMultiThreading_3.cs" />
     <Compile Remove="TaskCancellation.cs" />
+    <Compile Remove="TaskCancellation_11.cs" />
     <Compile Remove="TaskRunAndWait.cs" />
+    <Compile Remove="TaskRunAndWait_9.cs" />
     <Compile Remove="TaskWithReturnValue.cs" />
     <Compile Remove="AsyncAwait.cs" />
+    <Compile Remove="TaskWithReturnValue_10.cs" />
+    <Compile Remove="ThreadPoolVsThread_7.cs" />
     <Compile Remove="WhenAllWhenAny.cs" />
   </ItemGroup>
 </Project>

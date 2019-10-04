@@ -18,8 +18,9 @@ namespace AsynchronouseProgramming
         {
             if (!_done)
             {
-                _done = true;
+             
                 Console.WriteLine("Done");
+                _done = true;
             }
         }
     }

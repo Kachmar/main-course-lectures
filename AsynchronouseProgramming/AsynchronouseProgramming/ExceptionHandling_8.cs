@@ -3,12 +3,17 @@ using System.Threading;
 
 namespace AsynchronouseProgramming
 {
+    /// <summary>
+    /// As we can see from this example, that exception handling is hard, and returning values from thread is also hard
+    ///  so lets switch to Tasks
+    /// </summary>
     public class ExceptionHandling
     {
         public static void Main()
         {
             try
             {
+                //Go();
                 new Thread(Go).Start();
             }
             catch (Exception ex)
@@ -17,6 +22,10 @@ namespace AsynchronouseProgramming
                 Console.WriteLine("Exception!");
             }
         }
-        static void Go() { throw null; }
+
+        static void Go()
+        {
+            throw new Exception("Shit happens");
+        }
     }
 }

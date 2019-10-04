@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace AsynchronouseProgramming
 {
+
+    /// <summary>
+    /// This sample shows how to scale out the processes. So there might be case, that there are different algorithm for particular task, and we do not know which one is optimal in this case. So we start all the algorithms and when any on those algorithms finishes first - we use its result.
+    /// Second thing is how to run parallel tasks to scale the processing.
+    /// </summary>
     public class WhenAllWhenAny
     {
         static void Main()
@@ -16,15 +21,15 @@ namespace AsynchronouseProgramming
         {
             //var stopWatch = new Stopwatch();
             //stopWatch.Start();
-            //Task<int> winningTask = Task.WhenAny(Delay1(), Delay2(), Delay3()).Result;
+            //Task<int> winningTask = await Task.WhenAny(Alg1(), Alg2(), Alg3());
             //Console.WriteLine($"Done in {stopWatch.ElapsedMilliseconds}");
             //Console.WriteLine(winningTask.Result);
 
             //var stopWatch = new Stopwatch();
             //stopWatch.Start();
-            //var res = Task.WhenAll(Delay1(), Delay2(), Delay3()).Result;
+            //int[] res = await Task.WhenAll(Alg1(), Alg2(), Alg3());
             //Console.WriteLine($"Done in {stopWatch.ElapsedMilliseconds}");
-
+            //var x = 5;
 
             var stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -52,17 +57,20 @@ namespace AsynchronouseProgramming
             return content;
         }
 
-        static async Task<int> Delay1()
+        static async Task<int> Alg1()
         {
-            await Task.Delay(3000); return 1;
+            await Task.Delay(3000);
+            return 1;
         }
-        static async Task<int> Delay2()
+        static async Task<int> Alg2()
         {
-            await Task.Delay(2000); return 2;
+            await Task.Delay(2000);
+            return 2;
         }
-        static async Task<int> Delay3()
+        static async Task<int> Alg3()
         {
-            await Task.Delay(1000); return 3;
+            await Task.Delay(1000);
+            return 3;
         }
     }
 }

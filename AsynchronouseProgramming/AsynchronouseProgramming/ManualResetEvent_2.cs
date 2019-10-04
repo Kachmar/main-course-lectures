@@ -3,6 +3,9 @@ using System.Threading;
 
 namespace AsynchronouseProgramming
 {
+    /// <summary>
+    /// This is a demo, how the child thread is waiting for a signal from main thread
+    /// </summary>
     public class ManualResetEventClass
     {
         static ManualResetEvent signal = new ManualResetEvent(false);
