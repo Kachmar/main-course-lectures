@@ -1,4 +1,4 @@
-﻿namespace EfBasicsCore.EF
+﻿    namespace EfBasicsCore.EF
 {
     public class Exam
     {
