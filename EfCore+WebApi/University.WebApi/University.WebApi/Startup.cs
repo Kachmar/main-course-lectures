@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Models;
+using Models.Models;
 using University.DAL;
 
 namespace University.WebApi
@@ -29,6 +30,7 @@ namespace University.WebApi
         {
             services.AddDbContext<UniversityContext>(p => p.UseSqlServer(Configuration.GetConnectionString("UniversityConnectionString"))
                 .UseLazyLoadingProxies());
+
             services.AddTransient<ICourseRepository, CourseRepository>();
 
 
@@ -40,6 +42,16 @@ namespace University.WebApi
 
                 // Ensure the database is created.
                 db.Database.EnsureCreated();
+
+                var homeTask1 = new HomeTask { Title = "W1" };
+                var homeTask2 = new HomeTask { Title = "W2" };
+                var homeTask3 = new HomeTask { Title = "W3" };
+                var homeTask4 = new HomeTask { Title = "W4" };
+                var course1 = new Course { Name = "Math", HomeTasks = new List<HomeTask> { homeTask1, homeTask2 } };
+                var course2 = new Course { Name = "Physics", HomeTasks = new List<HomeTask> { homeTask3, homeTask4 } };
+              
+                db.Courses.Add(course1);
+                db.Courses.Add(course2);
                 db.SaveChanges();
             }
 

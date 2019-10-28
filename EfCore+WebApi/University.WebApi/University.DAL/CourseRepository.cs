@@ -7,9 +7,11 @@ namespace University.DAL
 {
     public class CourseRepository : ICourseRepository
     {
+        private readonly UniversityContext _universityContext;
+
         public CourseRepository(UniversityContext universityContext)
         {
-
+            _universityContext = universityContext;
         }
 
         public void Update(Course course)
