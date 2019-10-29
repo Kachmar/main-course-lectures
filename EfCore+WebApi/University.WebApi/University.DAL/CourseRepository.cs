@@ -1,7 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Models;
+﻿using Models;
 using Models.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace University.DAL
 {
@@ -16,22 +18,30 @@ namespace University.DAL
 
         public void Update(Course course)
         {
-            throw new NotImplementedException();
+            var existingCourse = _universityContext.Courses.Find(course.Id);
+            existingCourse.Name = course.Name;
+            _universityContext.Update(existingCourse);
+            _universityContext.SaveChanges();
         }
 
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            var course = _universityContext.Courses.Find(id);
+            _universityContext.Courses.Remove(course);
+           // _universityContext.Entry(course).State = EntityState.Deleted;
+            _universityContext.SaveChanges();
+
         }
 
         public Course GetById(int id)
         {
-            throw new NotImplementedException();
+            var course = _universityContext.Courses.Include(p => p.HomeTasks).FirstOrDefault(p => p.Id == id);
+            return course;
         }
 
         public IEnumerable<Course> GetAll()
         {
-            throw new NotImplementedException();
+            return _universityContext.Courses.Include(p => p.HomeTasks).ToList();
         }
 
         public Course Create(Course course)

@@ -20,7 +20,7 @@ namespace University.WebApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Course>> Get()
+        public ActionResult<List<Course>> Get()
         {
             return _courseRepository.GetAll().ToList();
         }
@@ -29,7 +29,11 @@ namespace University.WebApi.Controllers
         [HttpGet("{id}")]
         public ActionResult<Course> Get(int id)
         {
-            return _courseRepository.GetById(id);
+            var fromDb = _courseRepository.GetById(id);
+            var course = new Course() { Id = fromDb.Id, Name = fromDb.Name };
+            course.HomeTasks = new List<HomeTask>();
+            fromDb.HomeTasks.ForEach(ht => course.HomeTasks.Add(new HomeTask { Id = ht.Id, Title = ht.Title }));
+            return course;
         }
 
 

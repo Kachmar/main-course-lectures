@@ -29,7 +29,7 @@ namespace University.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<UniversityContext>(p => p.UseSqlServer(Configuration.GetConnectionString("UniversityConnectionString"))
-                .UseLazyLoadingProxies());
+                );
 
             services.AddTransient<ICourseRepository, CourseRepository>();
 
