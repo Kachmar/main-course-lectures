@@ -9,11 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using DataAccess.ADO;
 using Services;
 using DataAccess.EF;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace ASP.NET.Demo
 {
-    using Microsoft.AspNetCore.Identity;
-    using Microsoft.EntityFrameworkCore;
 
     public class Startup
     {
@@ -29,9 +29,9 @@ namespace ASP.NET.Demo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase());
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+            services.AddDbContext<ApplicationDbContext>( options => options.UseInMemoryDatabase("demo.site"));
+
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
             services.Configure<RepositoryOptions>(Configuration);
             services.AddScoped<StudentService>();
             services.AddScoped<CourseService>();
@@ -51,7 +51,7 @@ namespace ASP.NET.Demo
         {
             if (env.IsDevelopment())
             {
-                app.UseBrowserLink();
+                app.UseDatabaseErrorPage();
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -60,13 +60,15 @@ namespace ASP.NET.Demo
             }
 
             app.UseStaticFiles();
-            app.UseAuthentication();
             this.CreateAdminUser(userManager, roleManager);
-            app.UseMvc(routes =>
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseEndpoints(routes =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Course}/{action=Courses}/{id?}");
+                routes.MapControllerRoute(
+                     "default",
+                    "{controller=Course}/{action=Courses}/{id?}");
             });
         }
 
