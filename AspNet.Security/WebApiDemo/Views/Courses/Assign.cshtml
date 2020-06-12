@@ -1,0 +1,61 @@
+﻿@model WebApiDemo.ViewModels.StudentCoursesAssignmentViewModel
+@{
+    Layout = null;
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Assign</title>
+</head>
+<body>
+    <div class="form-horizontal">
+        <h4>Assign</h4>
+        <hr />
+        <form action="" method="post">
+            <input asp-for="StudentId" />
+            @Html.HiddenFor(m => Model.StudentId)
+            <div class="form-group">
+                <label class="col-md-5 control-label">@Model.StudentName</label>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Course name</th>
+                        <th>Course pass credits</th>
+                        <th>Assigned</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @for (var i = 0; i < Model.Courses.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Model.Courses[i].CourseName
+                            </td>
+                            <td>
+                                @Model.Courses[i].PassCredits
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(p => Model.Courses[i].IsAssigned)
+                            </td>
+                            @Html.HiddenFor(p => Model.Courses[i].CourseId)
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+
+            <div class="form-group">
+                <div class="col-md-offset-1 col-md-10">
+                    <input type="submit" value="Save" class="btn btn-default" />
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

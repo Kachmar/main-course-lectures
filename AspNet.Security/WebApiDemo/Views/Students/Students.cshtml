@@ -1,0 +1,72 @@
+﻿
+@{
+    Layout = null;
+}
+@model IEnumerable<Models.Models.Student>
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Students</title>
+</head>
+<body>
+@Html.ActionLink("Create","CreateStudent");
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            Student name
+        </th>
+        <th>
+            Birth date
+        </th>
+        <th>
+            Email
+        </th>
+        <th>
+            Phone number
+        </th>
+        <th>
+            GitHub link
+        </th>
+        <th>
+            Notes
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BirthDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PhoneNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GitHubLink)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Notes)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "EditStudent", "Students", new {id = item.Id})
+                @Html.ActionLink("Delete", "DeleteStudent", "Students", new {id = item.Id})
+                @Html.ActionLink("AssignCourses", "Assign", "Courses", new {id = item.Id})
+
+                @*@Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                            @Html.ActionLink("Delete", "Delete", new { id = item.Id })*@
+            </td>
+        </tr>
+    }
+</table>
+</body>
+</html>

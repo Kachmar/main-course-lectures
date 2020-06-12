@@ -1,0 +1,29 @@
+﻿@model WebApiDemo.ViewModels.UsersViewModel
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h2>Users</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.UserNames)
+        {
+        <tr>
+            <td>
+                @item
+            </td>
+            <td>
+                @Html.ActionLink("Assign Role", "AssignUserRole", new { userName = item })
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

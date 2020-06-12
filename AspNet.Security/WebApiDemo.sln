@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiDemo", "WebApiDemo\WebApiDemo.csproj", "{7D5C0D61-E9F4-448A-9D80-F7452E1E5CC2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess.ADO", "DataAccess.ADO\DataAccess.ADO.csproj", "{45BE1F86-30A2-427E-A11F-B6598513B7CE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csproj", "{C6291EC8-7ACA-40E5-A346-9992AF5FB0C2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7D5C0D61-E9F4-448A-9D80-F7452E1E5CC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D5C0D61-E9F4-448A-9D80-F7452E1E5CC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D5C0D61-E9F4-448A-9D80-F7452E1E5CC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D5C0D61-E9F4-448A-9D80-F7452E1E5CC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45BE1F86-30A2-427E-A11F-B6598513B7CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45BE1F86-30A2-427E-A11F-B6598513B7CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45BE1F86-30A2-427E-A11F-B6598513B7CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45BE1F86-30A2-427E-A11F-B6598513B7CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6291EC8-7ACA-40E5-A346-9992AF5FB0C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6291EC8-7ACA-40E5-A346-9992AF5FB0C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6291EC8-7ACA-40E5-A346-9992AF5FB0C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6291EC8-7ACA-40E5-A346-9992AF5FB0C2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A8996F21-24F1-495B-82F6-86F2569020AB}
+	EndGlobalSection
+EndGlobal
