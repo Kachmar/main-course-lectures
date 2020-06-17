@@ -27,10 +27,9 @@ namespace University.DAL
         public void Delete(int id)
         {
             var course = _universityContext.Courses.Find(id);
+            if (course == null) return; ;
             _universityContext.Courses.Remove(course);
-           // _universityContext.Entry(course).State = EntityState.Deleted;
             _universityContext.SaveChanges();
-
         }
 
         public Course GetById(int id)
@@ -46,7 +45,9 @@ namespace University.DAL
 
         public Course Create(Course course)
         {
-            throw new NotImplementedException();
+            var result = _universityContext.Add(course);
+            _universityContext.SaveChanges();
+            return result.Entity;
         }
     }
 }

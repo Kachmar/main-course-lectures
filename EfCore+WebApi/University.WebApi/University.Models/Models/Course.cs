@@ -10,6 +10,6 @@
 
         public int Id { get; set; }
 
-        public virtual List<HomeTask> HomeTasks { get; set; }
+        public virtual List<HomeTask> HomeTasks { get; set; } = new List<HomeTask>();
     }
 }

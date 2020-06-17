@@ -6,11 +6,13 @@
 
     public class UniversityContext : DbContext
     {
-        public static readonly LoggerFactory MyLoggerFactory
-            = new LoggerFactory(new[] { new ConsoleLoggerProvider((_, __) => true, true) });
+        public static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder => {
+                builder.AddConsole();
+            }
+        );
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseLoggerFactory(MyLoggerFactory)
+            optionsBuilder.UseLoggerFactory(loggerFactory)
                 .UseLazyLoadingProxies()
                 .UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=FluentCourseDemo;Trusted_Connection=True;");
         }

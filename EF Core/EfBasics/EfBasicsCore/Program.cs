@@ -15,8 +15,6 @@ namespace EfBasicsCore
     {
         static void Main(string[] args)
         {
-            Sample.Run();
-            return;
             using (var context = new UniversityContext())
             {
                 context.Database.EnsureDeleted();

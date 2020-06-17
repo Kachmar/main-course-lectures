@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ASP.NET.Demo.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -44,6 +45,16 @@ namespace ASP.NET.Demo
                     p.LoginPath = "/Security/Login";
                     p.Cookie.Name = "ASP.NET.Demo.App";
                 });
+            services.AddAuthorization(options => {
+                options.AddPolicy("UkrainiansOnly", builder =>
+                {
+                    builder.AddRequirements(new UkrainianRequirement());
+                });
+                options.AddPolicy("SameUserPolicy", builder =>
+                {
+                    builder.AddRequirements(new SameStudentRequirement());
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,14 +83,14 @@ namespace ASP.NET.Demo
             });
         }
 
-        private void CreateAdminUser(
+        private async Task CreateAdminUser(
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager)
         {
             IdentityUser identityUser = new IdentityUser("Admin@test.com") { Email = "Admin@test.com" };
-            var userRes = userManager.CreateAsync(identityUser, "Qwerty1234!");
-            var rol = roleManager.CreateAsync(new IdentityRole("Admin"));
-            var res = userManager.AddToRoleAsync(identityUser, "Admin");
+            var userRes = await userManager.CreateAsync(identityUser, "Qwerty1234!");
+            var rol = await roleManager.CreateAsync(new IdentityRole("Admin"));
+            var res = await userManager.AddToRoleAsync(identityUser, "Admin");
         }
     }
 }

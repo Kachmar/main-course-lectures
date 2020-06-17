@@ -8,13 +8,17 @@
 
     public class UniversityContext : DbContext
     {
-        public static readonly LoggerFactory MyLoggerFactory
-            = new LoggerFactory(new[] { new ConsoleLoggerProvider((_, __) => true, true) });
+    
+        public static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder => {
+                builder.AddConsole();
+            }
+        );
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseLoggerFactory(MyLoggerFactory)
+            optionsBuilder.UseLoggerFactory(loggerFactory)
                 
-                .UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=CoursesDemo;Trusted_Connection=True;");
+                .UseSqlServer(@"Data Source=NB00MCF001\SQLEXPRESS;Initial Catalog=EntityFrameworkBasics;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

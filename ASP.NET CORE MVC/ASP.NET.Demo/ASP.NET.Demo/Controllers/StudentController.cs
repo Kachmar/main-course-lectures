@@ -1,14 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+using System.Threading.Tasks;
 
 namespace ASP.NET.Demo.Controllers
 {
-    using System.Linq;
-
-    using ASP.NET.Demo.ViewModels;
-
-    using DataAccess.ADO;
-
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
 
     using Models.Models;
     using Services;
@@ -16,10 +12,12 @@ namespace ASP.NET.Demo.Controllers
     public class StudentController : Controller
     {
         private readonly StudentService studentService;
+        private readonly IAuthorizationService authorizationService;
 
-        public StudentController(StudentService studentService)
+        public StudentController(StudentService studentService, IAuthorizationService authorizationService)
         {
             this.studentService = studentService;
+            this.authorizationService = authorizationService;
         }
 
         // GET
@@ -29,26 +27,36 @@ namespace ASP.NET.Demo.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             var student = studentService.GetStudentById(id);
-            ViewData["Action"] = "Edit";
-            return this.View(student);
+            var result = await authorizationService.AuthorizeAsync(User, student, "SameUserPolicy");
+            if (result.Succeeded)
+            {
+                ViewData["Action"] = "Edit";
+                return this.View(student);
+            }
+
+            return Unauthorized();
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
-        public IActionResult Edit(Student model)
+        public async Task<IActionResult> Edit(Student model)
         {
             if (!ModelState.IsValid)
             {
                 ViewData["Action"] = "Edit";
                 return this.View("Edit", model);
             }
-            this.studentService.UpdateStudent(model);
 
-            return RedirectToAction("Students");
+            var result = await authorizationService.AuthorizeAsync(User, model, "SameUserPolicy");
+            if (result.Succeeded)
+            {
+                this.studentService.UpdateStudent(model);
+
+                return RedirectToAction("Students");
+            }
+            return Unauthorized();
         }
 
         [HttpGet]
